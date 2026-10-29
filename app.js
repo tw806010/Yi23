@@ -22,6 +22,10 @@ const gcsCard = document.querySelector('#gcsCard');
 const gcsResult = document.querySelector('#gcsResult');
 const gcsStartButton = document.querySelector('#gcsStartButton');
 const triageArea = document.querySelector('#triageArea');
+const vitalsArea = document.querySelector('#vitalsArea');
+const vitalsStartButton = document.querySelector('#vitalsStartButton');
+const vitalsForm = document.querySelector('#vitalsForm');
+const vitalsResults = document.querySelector('#vitalsResults');
 const art = type => {
   const common = '<svg viewBox="0 0 220 210" aria-hidden="true">';
   if(type === 'face') return common + '<path class="fill-shirt" d="M45 204c5-42 30-62 65-62s60 20 65 62Z"/><path class="fill-skin" d="M66 77c0-34 19-54 44-54s44 20 44 54v30c0 31-19 49-44 49s-44-18-44-49Z"/><path class="fill-hair" d="M64 85c-4-44 21-69 51-65 30 3 45 28 37 67-11-21-16-34-16-49-18 19-43 28-72 26Z"/><path fill="none" d="M81 89c7-4 14-4 20 0m19 0c7-4 14-4 20 0M88 117c9 2 18 2 26-1"/><path class="fill-yellow" d="M159 97c24 3 36 18 35 38-1 20-18 34-37 31"/><path fill="none" d="m165 130 10 10 16-22"/></svg>';
@@ -56,10 +60,12 @@ function showResult(isEmergency){
   resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function startCheck(){ homePage.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-function startTriage(){ homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function startCheck(){ homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function returnHome(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function startTriage(){ homePage.hidden = true; vitalsArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function startVitals(){ homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; vitalsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; vitalsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 triageStartButton.addEventListener('click', startTriage);
+vitalsStartButton.addEventListener('click', startVitals);
 cardStartButton.addEventListener('click', startCheck);
 restartButton.addEventListener('click', reset);
 homeButton.addEventListener('click', returnHome);
@@ -102,7 +108,44 @@ function showGcsResult(){
   gcsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function startGcs(){
-  gcsCurrent = 0; gcsAnswers = []; homePage.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsResult.hidden = true; gcsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderGcsStep(); gcsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  gcsCurrent = 0; gcsAnswers = []; homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsResult.hidden = true; gcsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderGcsStep(); gcsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 gcsStartButton.addEventListener('click', startGcs);
+
+const temperatureReferences = {
+  forehead: { name: '額溫', low: 35, high: 37, fever: 37.5 },
+  ear: { name: '耳溫', low: 35.9, high: 37.6, fever: 37.6 },
+  axillary: { name: '腋溫', low: 35, high: 37, fever: 37.5 },
+  rectal: { name: '肛溫', low: 36.2, high: 37.9, fever: 38 }
+};
+function referenceStatus(value, low, high, highMessage, normalMessage){
+  if(!Number.isFinite(value)) return '尚未輸入數值';
+  if(value < low) return '低於資料參考範圍';
+  if(value > high) return highMessage;
+  return normalMessage;
+}
+function vitalCard(type, title, value, unit, status, detail){
+  const display = Number.isFinite(value) || typeof value === 'string' ? `${value}<small>${unit}</small>` : '—';
+  return `<article class="vital-card ${type}"><h4>${title}</h4><div class="vital-value">${display}</div><p>${status}<br />${detail}</p></article>`;
+}
+vitalsForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const temperature = Number.parseFloat(document.querySelector('#temperature').value);
+  const pulse = Number.parseFloat(document.querySelector('#pulse').value);
+  const respiration = Number.parseFloat(document.querySelector('#respiration').value);
+  const systolic = Number.parseFloat(document.querySelector('#systolic').value);
+  const diastolic = Number.parseFloat(document.querySelector('#diastolic').value);
+  const note = document.querySelector('#vitalsNote').value.trim();
+  const reference = temperatureReferences[document.querySelector('#temperatureSite').value];
+  const temperatureStatus = referenceStatus(temperature, reference.low, reference.high, `高於 ${reference.name} 資料參考範圍`, '在資料參考範圍');
+  const pulseStatus = referenceStatus(pulse, 60, 100, '高於成人資料參考範圍', '在成人資料參考範圍');
+  const respirationStatus = referenceStatus(respiration, 12, 20, '高於成人資料參考範圍', '在成人資料參考範圍');
+  let pressureStatus = '尚未輸入完整血壓數值';
+  if(Number.isFinite(systolic) && Number.isFinite(diastolic)) pressureStatus = systolic < 120 && diastolic < 80 ? '在一般資料參考範圍' : systolic < 140 && diastolic < 90 ? '血壓偏高，建議持續觀察' : '高於一般資料參考，建議與醫療人員討論';
+  const bpValue = Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic}` : NaN;
+  const now = new Intl.DateTimeFormat('zh-TW', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+  vitalsResults.hidden = false;
+  vitalsResults.innerHTML = `<h3>您的生命徵象資料卡</h3><div class="vital-cards">${vitalCard('vital-temp', '體溫', temperature, '°C', temperatureStatus, `${reference.name}參考：${reference.low} 至 ${reference.high} °C`)}${vitalCard('vital-pulse', '脈搏', pulse, '次／分鐘', pulseStatus, '成人參考：60 至 100 次／分鐘')}${vitalCard('vital-resp', '呼吸', respiration, '次／分鐘', respirationStatus, '成人參考：12 至 20 次／分鐘')}${vitalCard('vital-bp', '血壓', bpValue, 'mmHg', pressureStatus, '收縮壓／舒張壓') }</div><section class="vitals-summary"><h4>就醫溝通摘要</h4><p>量測時間：${now}<br />體溫：${Number.isFinite(temperature) ? `${temperature} °C（${reference.name}）` : '未輸入'}；脈搏：${Number.isFinite(pulse) ? `${pulse} 次／分鐘` : '未輸入'}；呼吸：${Number.isFinite(respiration) ? `${respiration} 次／分鐘` : '未輸入'}；血壓：${Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg` : '未輸入'}。${note ? `<br />症狀備註：${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}` : ''}</p><p class="vitals-time">這份資料用於協助說明，不取代醫療判斷。</p></section><section class="vitals-callout"><div class="emergency-icon">!</div><div><strong>出現危急症狀時，不要等待重測。</strong><p>若有無意識、呼吸困難、持續胸痛、大量出血或症狀突然惡化，請立即撥打 119。</p></div></section>`;
+  vitalsResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
