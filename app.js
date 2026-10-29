@@ -17,6 +17,9 @@ const homeBrand = document.querySelector('#homeBrand');
 const bioButton = document.querySelector('#bioButton');
 const bioPage = document.querySelector('#bioPage');
 const bioCloseButton = document.querySelector('#bioCloseButton');
+const versionButton = document.querySelector('#versionButton');
+const versionPage = document.querySelector('#versionPage');
+const versionCloseButton = document.querySelector('#versionCloseButton');
 const gcsArea = document.querySelector('#gcsArea');
 const gcsCard = document.querySelector('#gcsCard');
 const gcsResult = document.querySelector('#gcsResult');
@@ -73,7 +76,10 @@ homeBrand.addEventListener('click', event => { if(!homePage.hidden) return; even
 bioButton.addEventListener('click', () => { bioPage.hidden = false; bioCloseButton.focus(); });
 bioCloseButton.addEventListener('click', () => { bioPage.hidden = true; bioButton.focus(); });
 bioPage.addEventListener('click', event => { if(event.target === bioPage) { bioPage.hidden = true; bioButton.focus(); } });
-document.addEventListener('keydown', event => { if(event.key === 'Escape' && !bioPage.hidden) { bioPage.hidden = true; bioButton.focus(); } });
+versionButton.addEventListener('click', () => { versionPage.hidden = false; versionCloseButton.focus(); });
+versionCloseButton.addEventListener('click', () => { versionPage.hidden = true; versionButton.focus(); });
+versionPage.addEventListener('click', event => { if(event.target === versionPage) { versionPage.hidden = true; versionButton.focus(); } });
+document.addEventListener('keydown', event => { if(event.key !== 'Escape') return; if(!bioPage.hidden) { bioPage.hidden = true; bioButton.focus(); } else if(!versionPage.hidden) { versionPage.hidden = true; versionButton.focus(); } });
 
 const gcsSteps = [
   { key: 'E', label: '睜眼反應', title: '觀察對方是否睜開眼睛。', instruction: '先觀察是否自然睜眼；若沒有，可用平常音量呼喚。無法判斷或有眼部因素時，請選擇「無法評估」。', choices: [[4, '自然睜開眼睛'], [3, '聽到呼喚後睜眼'], [2, '對壓力刺激有反應（限受過訓練者）'], [1, '沒有睜眼反應'], ['NT', '無法評估，例如眼部受傷或腫脹']] },
