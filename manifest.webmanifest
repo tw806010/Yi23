@@ -1,0 +1,10 @@
+{
+  "name": "醫二三｜醫療工具包",
+  "short_name": "醫二三",
+  "description": "提供簡單、可靠、隨時可用的健康工具。",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#edfaff",
+  "theme_color": "#f15b52",
+  "icons": [{ "src": "icon.png", "sizes": "1536x1536", "type": "image/png", "purpose": "any maskable" }]
+}

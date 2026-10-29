@@ -1,0 +1,6 @@
+# PDF 檢視與開發過程產生的暫存檔
+tmp/
+
+# 作業系統檔案
+Thumbs.db
+.DS_Store
