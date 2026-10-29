@@ -17,6 +17,10 @@ const homeBrand = document.querySelector('#homeBrand');
 const bioButton = document.querySelector('#bioButton');
 const bioPage = document.querySelector('#bioPage');
 const bioCloseButton = document.querySelector('#bioCloseButton');
+const gcsArea = document.querySelector('#gcsArea');
+const gcsCard = document.querySelector('#gcsCard');
+const gcsResult = document.querySelector('#gcsResult');
+const gcsStartButton = document.querySelector('#gcsStartButton');
 const art = type => {
   const common = '<svg viewBox="0 0 220 210" aria-hidden="true">';
   if(type === 'face') return common + '<path class="fill-shirt" d="M45 204c5-42 30-62 65-62s60 20 65 62Z"/><path class="fill-skin" d="M66 77c0-34 19-54 44-54s44 20 44 54v30c0 31-19 49-44 49s-44-18-44-49Z"/><path class="fill-hair" d="M64 85c-4-44 21-69 51-65 30 3 45 28 37 67-11-21-16-34-16-49-18 19-43 28-72 26Z"/><path fill="none" d="M81 89c7-4 14-4 20 0m19 0c7-4 14-4 20 0M88 117c9 2 18 2 26-1"/><path class="fill-yellow" d="M159 97c24 3 36 18 35 38-1 20-18 34-37 31"/><path fill="none" d="m165 130 10 10 16-22"/></svg>';
@@ -52,7 +56,7 @@ function showResult(isEmergency){
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startCheck(){ homePage.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function returnHome(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 startButton.addEventListener('click', startCheck);
 cardStartButton.addEventListener('click', startCheck);
 restartButton.addEventListener('click', reset);
@@ -62,4 +66,41 @@ bioButton.addEventListener('click', () => { bioPage.hidden = false; bioCloseButt
 bioCloseButton.addEventListener('click', () => { bioPage.hidden = true; bioButton.focus(); });
 bioPage.addEventListener('click', event => { if(event.target === bioPage) { bioPage.hidden = true; bioButton.focus(); } });
 document.addEventListener('keydown', event => { if(event.key === 'Escape' && !bioPage.hidden) { bioPage.hidden = true; bioButton.focus(); } });
+
+const gcsSteps = [
+  { key: 'E', label: '睜眼反應', title: '觀察對方是否睜開眼睛。', instruction: '先觀察是否自然睜眼；若沒有，可用平常音量呼喚。無法判斷或有眼部因素時，請選擇「無法評估」。', choices: [[4, '自然睜開眼睛'], [3, '聽到呼喚後睜眼'], [2, '對壓力刺激有反應（限受過訓練者）'], [1, '沒有睜眼反應'], ['NT', '無法評估，例如眼部受傷或腫脹']] },
+  { key: 'V', label: '言語反應', title: '觀察對方的說話內容。', instruction: '可詢問簡短問題，例如姓名或所在位置；依最符合的反應選擇。', choices: [[5, '說話有條理，能正確回答'], [4, '可說話，但內容混亂或答非所問'], [3, '只說出零星字詞'], [2, '只有呻吟或無法理解的聲音'], [1, '沒有言語反應'], ['NT', '無法評估，例如插管或口腔嚴重受傷']] },
+  { key: 'M', label: '動作反應', title: '觀察對方最佳的動作反應。', instruction: '先請對方依指令做簡單動作，例如握手或抬手；左右兩側應以最佳反應記錄。', choices: [[6, '可依指令做出動作'], [5, '對壓力刺激可定位反應（限受過訓練者）'], [4, '對壓力刺激有正常屈曲反應（限受過訓練者）'], [3, '對壓力刺激有異常屈曲反應（限受過訓練者）'], [2, '對壓力刺激有伸展反應（限受過訓練者）'], [1, '沒有動作反應'], ['NT', '無法評估，例如嚴重肢體傷害']] }
+];
+let gcsCurrent = 0;
+let gcsAnswers = [];
+function renderGcsStep(){
+  const step = gcsSteps[gcsCurrent];
+  document.querySelector('#gcsStepLabel').textContent = `GCS 步驟 ${gcsCurrent + 1}／3`;
+  document.querySelector('#gcsProgressText').textContent = `${step.key}｜${step.label}`;
+  document.querySelector('#gcsProgressBar').style.width = `${((gcsCurrent + 1) / 3) * 100}%`;
+  gcsCard.innerHTML = `<div class="step-illustration"><div class="gcs-key">${step.key}</div></div><div class="card-copy"><span class="step-pill">${step.key}｜${step.label}</span><h2>${step.title}</h2><p class="instruction">${step.instruction}</p><div class="gcs-intro"><span class="gcs-key">！</span><span><strong>安全提醒：</strong>若對方沒有正常反應、呼吸異常或狀況惡化，請立即撥打 119。</span></div><div class="gcs-choices">${step.choices.map(([score, text]) => `<button class="gcs-choice ${score === 'NT' ? 'nt' : ''}" type="button" data-score="${score}"><span class="gcs-score">${score}</span><span>${text}</span></button>`).join('')}</div></div>`;
+  gcsCard.querySelectorAll('[data-score]').forEach(button => button.addEventListener('click', () => chooseGcs(button.dataset.score)));
+}
+function chooseGcs(score){
+  gcsAnswers.push({ ...gcsSteps[gcsCurrent], score: score === 'NT' ? 'NT' : Number(score) });
+  gcsCurrent += 1;
+  if(gcsCurrent < gcsSteps.length) renderGcsStep(); else showGcsResult();
+}
+function showGcsResult(){
+  gcsArea.hidden = true;
+  gcsResult.hidden = false;
+  const hasNt = gcsAnswers.some(answer => answer.score === 'NT');
+  const total = hasNt ? null : gcsAnswers.reduce((sum, answer) => sum + answer.score, 0);
+  const summary = gcsAnswers.map(answer => `${answer.key}${answer.score}`).join('　');
+  const concerning = hasNt || total === null || total < 15;
+  const now = new Intl.DateTimeFormat('zh-TW', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+  gcsResult.innerHTML = `<article class="result-card ${concerning ? '' : 'safe-result'}"><div class="result-icon">${concerning ? '！' : '✓'}</div><h2>${hasNt ? '評估紀錄已完成' : `GCS ${total} 分`}</h2><p>${hasNt ? '有項目無法評估，因此不計算總分。請將各分項紀錄提供給救護或醫護人員。' : '請以各分項反應與評估時間一併交接；總分僅供紀錄，不能取代專業判斷。'}</p><div class="gcs-summary-grid">${gcsAnswers.map(answer => `<div class="gcs-summary-item">${answer.key}${answer.score}<small>${answer.label}</small></div>`).join('')}</div>${concerning ? '<a class="call-button" href="tel:119">意識異常請撥打 <b>119</b></a>' : ''}<p class="gcs-time">評估時間：${now}</p><button class="primary-button" id="gcsRestart" type="button">重新評估</button></article>`;
+  document.querySelector('#gcsRestart').addEventListener('click', startGcs);
+  gcsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function startGcs(){
+  gcsCurrent = 0; gcsAnswers = []; homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsResult.hidden = true; gcsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderGcsStep(); gcsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+gcsStartButton.addEventListener('click', startGcs);
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
