@@ -9,7 +9,7 @@ const checkArea = document.querySelector('#checkArea');
 const resultArea = document.querySelector('#resultArea');
 const testCard = document.querySelector('#testCard');
 const homePage = document.querySelector('#homePage');
-const startButton = document.querySelector('#startButton');
+const triageStartButton = document.querySelector('#triageStartButton');
 const cardStartButton = document.querySelector('#cardStartButton');
 const restartButton = document.querySelector('#restartButton');
 const homeButton = document.querySelector('#homeButton');
@@ -21,6 +21,7 @@ const gcsArea = document.querySelector('#gcsArea');
 const gcsCard = document.querySelector('#gcsCard');
 const gcsResult = document.querySelector('#gcsResult');
 const gcsStartButton = document.querySelector('#gcsStartButton');
+const triageArea = document.querySelector('#triageArea');
 const art = type => {
   const common = '<svg viewBox="0 0 220 210" aria-hidden="true">';
   if(type === 'face') return common + '<path class="fill-shirt" d="M45 204c5-42 30-62 65-62s60 20 65 62Z"/><path class="fill-skin" d="M66 77c0-34 19-54 44-54s44 20 44 54v30c0 31-19 49-44 49s-44-18-44-49Z"/><path class="fill-hair" d="M64 85c-4-44 21-69 51-65 30 3 45 28 37 67-11-21-16-34-16-49-18 19-43 28-72 26Z"/><path fill="none" d="M81 89c7-4 14-4 20 0m19 0c7-4 14-4 20 0M88 117c9 2 18 2 26-1"/><path class="fill-yellow" d="M159 97c24 3 36 18 35 38-1 20-18 34-37 31"/><path fill="none" d="m165 130 10 10 16-22"/></svg>';
@@ -55,9 +56,10 @@ function showResult(isEmergency){
   resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function startCheck(){ homePage.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-startButton.addEventListener('click', startCheck);
+function startCheck(){ homePage.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function returnHome(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function startTriage(){ homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+triageStartButton.addEventListener('click', startTriage);
 cardStartButton.addEventListener('click', startCheck);
 restartButton.addEventListener('click', reset);
 homeButton.addEventListener('click', returnHome);
@@ -100,7 +102,7 @@ function showGcsResult(){
   gcsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function startGcs(){
-  gcsCurrent = 0; gcsAnswers = []; homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsResult.hidden = true; gcsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderGcsStep(); gcsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  gcsCurrent = 0; gcsAnswers = []; homePage.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsResult.hidden = true; gcsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderGcsStep(); gcsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 gcsStartButton.addEventListener('click', startGcs);
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
