@@ -29,6 +29,94 @@ const vitalsArea = document.querySelector('#vitalsArea');
 const vitalsStartButton = document.querySelector('#vitalsStartButton');
 const vitalsForm = document.querySelector('#vitalsForm');
 const vitalsResults = document.querySelector('#vitalsResults');
+function wrapCanvasText(context, text, maxWidth){
+  const lines = [];
+  for(const paragraph of String(text).split('\n')){
+    let line = '';
+    for(const character of paragraph){
+      const candidate = line + character;
+      if(line && context.measureText(candidate).width > maxWidth){ lines.push(line); line = character; }
+      else line = candidate;
+    }
+    lines.push(line || ' ');
+  }
+  return lines;
+}
+function saveResultPng(title, rows, fileName){
+  const width = 1080;
+  const margin = 72;
+  const innerWidth = width - margin * 2;
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if(!context) throw new Error('無法建立圖片');
+  context.font = '32px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+  const preparedRows = rows.map(([label, value]) => ({ label, value: wrapCanvasText(context, `${label}：${value}`, innerWidth - 44) }));
+  const rowHeights = preparedRows.map(row => Math.max(86, row.value.length * 48 + 34));
+  const height = 285 + rowHeights.reduce((sum, rowHeight) => sum + rowHeight + 18, 0) + 165;
+  canvas.width = width;
+  canvas.height = height;
+  context.fillStyle = '#f1f8fa';
+  context.fillRect(0, 0, width, height);
+  context.fillStyle = '#fffdf8';
+  context.beginPath();
+  context.roundRect(28, 28, width - 56, height - 56, 32);
+  context.fill();
+  context.fillStyle = '#f15b52';
+  context.beginPath();
+  context.roundRect(28, 28, width - 56, 190, 32);
+  context.fill();
+  context.fillRect(28, 155, width - 56, 63);
+  context.fillStyle = '#ffffff';
+  context.font = '800 25px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+  context.fillText('醫二三｜緊急工具包', margin, 88);
+  context.font = '800 43px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+  context.fillText(title, margin, 157);
+  let y = 245;
+  preparedRows.forEach((row, index) => {
+    const rowHeight = rowHeights[index];
+    context.fillStyle = '#f6fbfc';
+    context.strokeStyle = '#d8e7ed';
+    context.lineWidth = 2;
+    context.beginPath();
+    context.roundRect(margin, y, innerWidth, rowHeight, 18);
+    context.fill();
+    context.stroke();
+    context.fillStyle = '#294b63';
+    context.font = '600 32px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+    row.value.forEach((line, lineIndex) => context.fillText(line, margin + 22, y + 53 + lineIndex * 48));
+    y += rowHeight + 18;
+  });
+  context.fillStyle = '#5f7180';
+  context.font = '25px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+  context.fillText('本圖片由使用者在本機產生，供紀錄與溝通參考。', margin, height - 112);
+  context.fillText('不能取代專業判斷；緊急狀況請立即撥打 119。', margin, height - 70);
+  return new Promise((resolve, reject) => canvas.toBlob(blob => {
+    if(!blob){ reject(new Error('PNG 圖片產生失敗')); return; }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    resolve();
+  }, 'image/png'));
+}
+function addPngButton(container, title, rows, fileName){
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'primary-button png-save-button';
+  button.textContent = '儲存 PNG 圖片';
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    button.textContent = '正在製作 PNG…';
+    try { await saveResultPng(title, rows, fileName); button.textContent = 'PNG 已下載'; }
+    catch { button.textContent = '製作失敗，請再試一次'; }
+    window.setTimeout(() => { button.disabled = false; button.textContent = '儲存 PNG 圖片'; }, 2200);
+  });
+  container.append(button);
+}
 const art = type => {
   const common = '<svg viewBox="0 0 220 210" aria-hidden="true">';
   if(type === 'face') return common + '<path class="fill-shirt" d="M45 204c5-42 30-62 65-62s60 20 65 62Z"/><path class="fill-skin" d="M66 77c0-34 19-54 44-54s44 20 44 54v30c0 31-19 49-44 49s-44-18-44-49Z"/><path class="fill-hair" d="M64 85c-4-44 21-69 51-65 30 3 45 28 37 67-11-21-16-34-16-49-18 19-43 28-72 26Z"/><path fill="none" d="M81 89c7-4 14-4 20 0m19 0c7-4 14-4 20 0M88 117c9 2 18 2 26-1"/><path class="fill-yellow" d="M159 97c24 3 36 18 35 38-1 20-18 34-37 31"/><path fill="none" d="m165 130 10 10 16-22"/></svg>';
@@ -54,12 +142,19 @@ function showResult(isEmergency){
   resultArea.hidden = false;
   restartButton.hidden = false;
   const abnormalities = answers.filter(answer => answer.value === 'abnormal').map(answer => `${answer.key}／${answer.label}`);
+  const observedAt = new Intl.DateTimeFormat('zh-TW', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
   if(isEmergency){
     resultArea.innerHTML = `<article class="result-card"><div class="result-icon">!</div><h2>疑似中風徵象</h2><p>您在「${abnormalities.join('、')}」發現異常。中風治療分秒必爭，請立即尋求緊急醫療協助。</p><a class="call-button" href="tel:119">立即撥打 <b>119</b></a><div class="summary"><h3>聯絡救護人員前，請準備：</h3><ul><li>患者何時最後看起來正常，或症狀何時開始。</li><li>已觀察到的異常狀況：${abnormalities.join('、')}。</li><li>請勿自行開車前往，也不要自行服藥。</li></ul></div></article>`;
   } else {
     resultArea.innerHTML = `<article class="result-card safe-result"><div class="result-icon">✓</div><h2>本次未發現明顯異常</h2><p>若症狀持續、反覆出現，或您仍覺得不對勁，請不要等待，立即撥打 119 或就近就醫。</p><button class="primary-button" id="resultRestart" type="button">重新檢查</button></article>`;
     document.querySelector('#resultRestart').addEventListener('click', reset);
   }
+  addPngButton(resultArea.querySelector('.result-card'), '中風快速檢查結果', [
+    ['觀察時間', observedAt],
+    ['臉部、手臂、說話觀察', answers.map(answer => `${answer.label}：${answer.value === 'abnormal' ? '發現異常' : answer.value === 'unknown' ? '無法判斷' : '看起來正常'}`).join('；')],
+    ['發病或最後正常時間', '尚未記錄，請補充告知救護人員'],
+    ['結果提醒', isEmergency ? `發現異常：${abnormalities.join('、')}；請立即撥打 119。` : '本次未發現明顯異常；若症狀持續或惡化，請立即就醫。']
+  ], `中風快速檢查-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
   resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
@@ -111,6 +206,12 @@ function showGcsResult(){
   const now = new Intl.DateTimeFormat('zh-TW', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
   gcsResult.innerHTML = `<article class="result-card ${concerning ? '' : 'safe-result'}"><div class="result-icon">${concerning ? '！' : '✓'}</div><h2>${hasNt ? '評估紀錄已完成' : `GCS ${total} 分`}</h2><p>${hasNt ? '有項目無法評估，因此不計算總分。請將各分項紀錄提供給救護或醫護人員。' : '請以各分項反應與評估時間一併交接；總分僅供紀錄，不能取代專業判斷。'}</p><div class="gcs-summary-grid">${gcsAnswers.map(answer => `<div class="gcs-summary-item">${answer.key}${answer.score}<small>${answer.label}</small></div>`).join('')}</div>${concerning ? '<a class="call-button" href="tel:119">意識異常請撥打 <b>119</b></a>' : ''}<p class="gcs-time">評估時間：${now}</p><button class="primary-button" id="gcsRestart" type="button">重新評估</button></article>`;
   document.querySelector('#gcsRestart').addEventListener('click', startGcs);
+  addPngButton(gcsResult.querySelector('.result-card'), 'GCS 昏迷指數結果', [
+    ['評估時間', now],
+    ...gcsAnswers.map(answer => [answer.label, `${answer.key}${answer.score}`]),
+    ['總分', hasNt ? '有項目無法評估，不計算總分' : `${total} 分`],
+    ['結果提醒', concerning ? '請立即尋求救護或醫療協助。' : '本結果僅供紀錄，不能取代專業判斷。']
+  ], `GCS評估-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
   gcsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function startGcs(){
@@ -188,6 +289,15 @@ vitalsForm.addEventListener('submit', event => {
   const now = new Intl.DateTimeFormat('zh-TW', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
   vitalsResults.hidden = false;
   vitalsResults.innerHTML = `<h3>您的生命徵象資料卡</h3><p class="vitals-disclaimer">年齡參考區間依本頁列示資料整理，兒科資料表修訂於 2013 年；僅供對照，清醒／睡眠、活動、發燒與臨床狀況都會影響數值。</p><div class="vital-cards">${vitalCard('vital-temp', '體溫', temperature, '°C', temperatureStatus, `${reference.name}參考：${reference.low} 至 ${reference.high} °C`)}${vitalCard('vital-pulse', '脈搏', pulse, '次／分鐘', pulseStatus, ageReferences.pulse.detail)}${vitalCard('vital-resp', '呼吸', respiration, '次／分鐘', respirationStatus, ageReferences.respiration.detail)}${vitalCard('vital-bp', '血壓', bpValue, 'mmHg', pressureStatus, ageReferences.bloodPressure) }</div><section class="vitals-summary"><h4>就醫溝通摘要</h4><p>年齡：${ageDescription}<br />量測時間：${now}<br />體溫：${Number.isFinite(temperature) ? `${temperature} °C（${reference.name}）` : '未輸入'}；脈搏：${Number.isFinite(pulse) ? `${pulse} 次／分鐘` : '未輸入'}；呼吸：${Number.isFinite(respiration) ? `${respiration} 次／分鐘` : '未輸入'}；血壓：${Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg` : '未輸入'}。${note ? `<br />症狀備註：${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}` : ''}</p><p class="vitals-time">這份資料用於協助說明，不取代醫療判斷。</p></section><section class="vitals-callout"><div class="emergency-icon">!</div><div><strong>出現危急症狀時，不要等待重測。</strong><p>若有無意識、呼吸困難、持續胸痛、大量出血或症狀突然惡化，請立即撥打 119。</p></div></section>`;
+  addPngButton(vitalsResults, '生命徵象資料卡', [
+    ['年齡', ageDescription],
+    ['量測時間', now],
+    ['體溫', Number.isFinite(temperature) ? `${temperature} °C（${reference.name}；參考 ${reference.low}～${reference.high} °C）` : '未輸入'],
+    ['脈搏', Number.isFinite(pulse) ? `${pulse} 次／分鐘；${ageReferences.pulse.detail}` : '未輸入'],
+    ['呼吸', Number.isFinite(respiration) ? `${respiration} 次／分鐘；${ageReferences.respiration.detail}` : '未輸入'],
+    ['血壓', Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg；${ageReferences.bloodPressure}` : `未輸入完整數值；${ageReferences.bloodPressure}`],
+    ['症狀備註', note || '無']
+  ], `生命徵象-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
   vitalsResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 const ageValueInput = document.querySelector('#ageValue');
