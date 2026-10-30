@@ -85,7 +85,7 @@
       <section class="vitals-area" id="vitalsArea" hidden aria-labelledby="vitalsTitle">
         <header class="vitals-header"><p class="eyebrow">量測與紀錄</p><h2 id="vitalsTitle">生命徵象資料卡</h2><p>輸入已量測的數值，整理體溫、脈搏、呼吸與血壓，協助您觀察並在需要時向醫護人員說明。</p><div class="vitals-disclaimer">數值僅供初步記錄與參考，不能取代專業診斷。若出現呼吸困難、無意識、持續胸痛、大量出血或突然惡化，請直接撥打 119。</div></header>
         <form id="vitalsForm" class="vitals-form">
-          <section class="vitals-field"><h3>年齡層</h3><p>選擇適用年齡，方便整理生命徵象資料。</p><label for="vitalsAgeGroup">年齡層</label><select id="vitalsAgeGroup" required><option value="" selected disabled>請選擇年齡層</option><option value="新生兒（0 天～未滿 28 天）">新生兒（0 天～未滿 28 天）</option><option value="嬰兒（28 天～未滿 1 歲）">嬰兒（28 天～未滿 1 歲）</option><option value="幼兒及學齡前兒童（滿 1 歲～未滿 6 歲）">幼兒及學齡前兒童（滿 1 歲～未滿 6 歲）</option><option value="學齡期兒童（6 歲～未滿 12 歲）">學齡期兒童（6 歲～未滿 12 歲）</option><option value="青少年及成人（12 歲以上）">青少年及成人（12 歲以上）</option></select></section>
+          <section class="vitals-field"><h3>年齡</h3><p>輸入日齡、月齡或歲數，系統會分別對照各項生命徵象的年齡區間。</p><div class="bp-inputs"><div><label for="ageValue">年齡數值</label><input id="ageValue" type="number" inputmode="numeric" min="0" max="120" step="1" required placeholder="例如 3" /></div><div><label for="ageUnit">單位</label><select id="ageUnit" required><option value="days">天</option><option value="months">個月</option><option value="years" selected>歲</option></select></div></div><p class="vitals-time" id="ageGroupPreview" aria-live="polite">將依年齡顯示所屬年齡層。</p></section>
           <section class="vitals-field"><h3>體溫</h3><p>請先選擇量測部位，再輸入讀數。</p><label for="temperatureSite">量測部位</label><select id="temperatureSite"><option value="forehead">額溫</option><option value="ear">耳溫</option><option value="axillary">腋溫</option><option value="rectal">肛溫</option></select><label for="temperature">體溫（°C）</label><input id="temperature" type="number" inputmode="decimal" min="25" max="45" step="0.1" placeholder="例如 36.5" /></section>
           <section class="vitals-field"><h3>脈搏</h3><p>請記錄每分鐘跳動次數。</p><label for="pulse">脈搏（次／分鐘）</label><input id="pulse" type="number" inputmode="numeric" min="20" max="250" placeholder="例如 72" /></section>
           <section class="vitals-field"><h3>呼吸</h3><p>請記錄每分鐘呼吸次數。</p><label for="respiration">呼吸（次／分鐘）</label><input id="respiration" type="number" inputmode="numeric" min="4" max="80" placeholder="例如 16" /></section>
@@ -94,7 +94,7 @@
           <button class="primary-button vitals-submit" type="submit">建立生命徵象資料卡 <span>→</span></button>
         </form>
         <section class="vitals-results" id="vitalsResults" hidden aria-live="polite"></section>
-        <p class="vitals-source">參考資料：<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4990&amp;pid=19259" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・血壓多少才算是高血壓？</a>、本專案生命徵象衛教資料。血壓與其他數值應配合多次量測及身體狀況判讀。</p>
+        <p class="vitals-source">參考資料：<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4990&amp;pid=19259" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・血壓多少才算是高血壓？</a>、成人生命徵象衛教資料及兒科生命徵象表（表格修訂日期：2013 年）。兒科參考值僅供資料對照，應由醫療人員配合清醒／睡眠、活動、發燒及臨床狀況判讀；若有疑慮，請勿以本卡延誤就醫。</p>
       </section>
 
       <section class="triage-area" id="triageArea" hidden aria-labelledby="triageTitle">

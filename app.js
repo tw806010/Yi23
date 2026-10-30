@@ -124,6 +124,40 @@ const temperatureReferences = {
   axillary: { name: '腋溫', low: 35, high: 37, fever: 37.5 },
   rectal: { name: '肛溫', low: 36.2, high: 37.9, fever: 38 }
 };
+function getAgeInMonths(value, unit){
+  const age = Number(value);
+  if(!Number.isFinite(age) || age < 0) return NaN;
+  if(unit === 'days') return age / 30.4375;
+  if(unit === 'months') return age;
+  return age * 12;
+}
+function ageLabel(months){
+  if(months < 28 / 30.4375) return '新生兒（未滿 28 天）';
+  if(months < 12) return '嬰兒（未滿 1 歲）';
+  if(months < 72) return '幼兒及學齡前兒童（1～未滿 6 歲）';
+  if(months < 144) return '學齡期兒童（6～未滿 12 歲）';
+  return '青少年及成人（12 歲以上）';
+}
+function ageSpecificReferences(months){
+  const pulse = months < 3 ? [85, 205, '清醒心跳參考：85 至 205 次／分鐘']
+    : months < 24 ? [100, 190, '清醒心跳參考：100 至 190 次／分鐘']
+    : months < 120 ? [60, 140, '清醒心跳參考：60 至 140 次／分鐘']
+    : [60, 100, '清醒心跳參考：60 至 100 次／分鐘'];
+  let respiration;
+  let bloodPressure;
+  if(months < 1){ respiration = [30, 60]; bloodPressure = '收縮壓 78～86／舒張壓 42～54 mmHg'; }
+  else if(months < 6){ respiration = [30, 50]; bloodPressure = '收縮壓 86～90／舒張壓 54～60 mmHg'; }
+  else if(months < 12){ respiration = [24, 46]; bloodPressure = '收縮壓 90～96／舒張壓 60～65 mmHg'; }
+  else if(months < 48){ respiration = [20, 30]; bloodPressure = '收縮壓 96～99／舒張壓約 65 mmHg'; }
+  else if(months < 72){ respiration = [20, 25]; bloodPressure = '收縮壓 99～100／舒張壓 60～65 mmHg'; }
+  else if(months < 144){ respiration = [16, 20]; bloodPressure = '收縮壓 100～115／舒張壓約 60 mmHg'; }
+  else { respiration = [12, 20]; bloodPressure = '來源列示收縮壓 100～115／舒張壓約 60 mmHg；成人血壓另依國健署資料參考'; }
+  return {
+    pulse: { low: pulse[0], high: pulse[1], detail: pulse[2] },
+    respiration: { low: respiration[0], high: respiration[1], detail: `呼吸參考：${respiration[0]} 至 ${respiration[1]} 次／分鐘` },
+    bloodPressure
+  };
+}
 function referenceStatus(value, low, high, highMessage, normalMessage){
   if(!Number.isFinite(value)) return '尚未輸入數值';
   if(value < low) return '低於資料參考範圍';
@@ -141,18 +175,29 @@ vitalsForm.addEventListener('submit', event => {
   const respiration = Number.parseFloat(document.querySelector('#respiration').value);
   const systolic = Number.parseFloat(document.querySelector('#systolic').value);
   const diastolic = Number.parseFloat(document.querySelector('#diastolic').value);
-  const ageGroup = document.querySelector('#vitalsAgeGroup').value;
+  const ageMonths = getAgeInMonths(document.querySelector('#ageValue').value, document.querySelector('#ageUnit').value);
+  const ageDescription = ageLabel(ageMonths);
+  const ageReferences = ageSpecificReferences(ageMonths);
   const note = document.querySelector('#vitalsNote').value.trim();
   const reference = temperatureReferences[document.querySelector('#temperatureSite').value];
   const temperatureStatus = referenceStatus(temperature, reference.low, reference.high, `高於 ${reference.name} 資料參考範圍`, '在資料參考範圍');
-  const pulseStatus = referenceStatus(pulse, 60, 100, '高於成人資料參考範圍', '在成人資料參考範圍');
-  const respirationStatus = referenceStatus(respiration, 12, 20, '高於成人資料參考範圍', '在成人資料參考範圍');
-  let pressureStatus = '尚未輸入完整血壓數值';
-  if(Number.isFinite(systolic) && Number.isFinite(diastolic)) pressureStatus = systolic < 120 && diastolic < 80 ? '在一般資料參考範圍' : systolic < 140 && diastolic < 90 ? '血壓偏高，建議持續觀察' : '高於一般資料參考，建議與醫療人員討論';
+  const pulseStatus = referenceStatus(pulse, ageReferences.pulse.low, ageReferences.pulse.high, '高於所選年齡資料參考範圍', '在所選年齡資料參考範圍');
+  const respirationStatus = referenceStatus(respiration, ageReferences.respiration.low, ageReferences.respiration.high, '高於所選年齡資料參考範圍', '在所選年齡資料參考範圍');
+  const pressureStatus = Number.isFinite(systolic) && Number.isFinite(diastolic) ? '來源參考值僅供對照，請由醫療人員依年齡及臨床狀況判讀' : '尚未輸入完整血壓數值';
   const bpValue = Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic}` : NaN;
   const now = new Intl.DateTimeFormat('zh-TW', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
   vitalsResults.hidden = false;
-  vitalsResults.innerHTML = `<h3>您的生命徵象資料卡</h3><div class="vital-cards">${vitalCard('vital-temp', '體溫', temperature, '°C', temperatureStatus, `${reference.name}參考：${reference.low} 至 ${reference.high} °C`)}${vitalCard('vital-pulse', '脈搏', pulse, '次／分鐘', pulseStatus, '成人參考：60 至 100 次／分鐘')}${vitalCard('vital-resp', '呼吸', respiration, '次／分鐘', respirationStatus, '成人參考：12 至 20 次／分鐘')}${vitalCard('vital-bp', '血壓', bpValue, 'mmHg', pressureStatus, '收縮壓／舒張壓') }</div><section class="vitals-summary"><h4>就醫溝通摘要</h4><p>年齡層：${ageGroup}<br />量測時間：${now}<br />體溫：${Number.isFinite(temperature) ? `${temperature} °C（${reference.name}）` : '未輸入'}；脈搏：${Number.isFinite(pulse) ? `${pulse} 次／分鐘` : '未輸入'}；呼吸：${Number.isFinite(respiration) ? `${respiration} 次／分鐘` : '未輸入'}；血壓：${Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg` : '未輸入'}。${note ? `<br />症狀備註：${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}` : ''}</p><p class="vitals-time">這份資料用於協助說明，不取代醫療判斷。</p></section><section class="vitals-callout"><div class="emergency-icon">!</div><div><strong>出現危急症狀時，不要等待重測。</strong><p>若有無意識、呼吸困難、持續胸痛、大量出血或症狀突然惡化，請立即撥打 119。</p></div></section>`;
+  vitalsResults.innerHTML = `<h3>您的生命徵象資料卡</h3><p class="vitals-disclaimer">年齡參考區間依本頁列示資料整理，兒科資料表修訂於 2013 年；僅供對照，清醒／睡眠、活動、發燒與臨床狀況都會影響數值。</p><div class="vital-cards">${vitalCard('vital-temp', '體溫', temperature, '°C', temperatureStatus, `${reference.name}參考：${reference.low} 至 ${reference.high} °C`)}${vitalCard('vital-pulse', '脈搏', pulse, '次／分鐘', pulseStatus, ageReferences.pulse.detail)}${vitalCard('vital-resp', '呼吸', respiration, '次／分鐘', respirationStatus, ageReferences.respiration.detail)}${vitalCard('vital-bp', '血壓', bpValue, 'mmHg', pressureStatus, ageReferences.bloodPressure) }</div><section class="vitals-summary"><h4>就醫溝通摘要</h4><p>年齡：${ageDescription}<br />量測時間：${now}<br />體溫：${Number.isFinite(temperature) ? `${temperature} °C（${reference.name}）` : '未輸入'}；脈搏：${Number.isFinite(pulse) ? `${pulse} 次／分鐘` : '未輸入'}；呼吸：${Number.isFinite(respiration) ? `${respiration} 次／分鐘` : '未輸入'}；血壓：${Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg` : '未輸入'}。${note ? `<br />症狀備註：${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}` : ''}</p><p class="vitals-time">這份資料用於協助說明，不取代醫療判斷。</p></section><section class="vitals-callout"><div class="emergency-icon">!</div><div><strong>出現危急症狀時，不要等待重測。</strong><p>若有無意識、呼吸困難、持續胸痛、大量出血或症狀突然惡化，請立即撥打 119。</p></div></section>`;
   vitalsResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+const ageValueInput = document.querySelector('#ageValue');
+const ageUnitSelect = document.querySelector('#ageUnit');
+const ageGroupPreview = document.querySelector('#ageGroupPreview');
+function updateAgePreview(){
+  ageValueInput.max = ageUnitSelect.value === 'days' ? '43800' : ageUnitSelect.value === 'months' ? '1440' : '120';
+  const months = getAgeInMonths(ageValueInput.value, ageUnitSelect.value);
+  ageGroupPreview.textContent = Number.isFinite(months) ? `資料卡年齡分類：${ageLabel(months)}` : '將依年齡顯示所屬年齡層。';
+}
+ageValueInput.addEventListener('input', updateAgePreview);
+ageUnitSelect.addEventListener('change', updateAgePreview);
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
