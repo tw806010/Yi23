@@ -107,13 +107,13 @@ function addPngButton(container, title, rows, fileName){
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'primary-button png-save-button';
-  button.textContent = '儲存 PNG 圖片';
+  button.textContent = '儲存結果圖片';
   button.addEventListener('click', async () => {
     button.disabled = true;
     button.textContent = '正在製作 PNG…';
     try { await saveResultPng(title, rows, fileName); button.textContent = 'PNG 已下載'; }
     catch { button.textContent = '製作失敗，請再試一次'; }
-    window.setTimeout(() => { button.disabled = false; button.textContent = '儲存 PNG 圖片'; }, 2200);
+    window.setTimeout(() => { button.disabled = false; button.textContent = '儲存結果圖片'; }, 2200);
   });
   container.append(button);
 }
