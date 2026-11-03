@@ -9,7 +9,7 @@
     <link rel="icon" href="icon.png" />
     <link rel="apple-touch-icon" href="icon.png" />
     <title>醫二三｜緊急工具包</title>
-    <link rel="stylesheet" href="style.css?v=7" />
+    <link rel="stylesheet" href="style.css?v=10" />
     <style>
       .hero-art { display: grid; place-items: center; }
       .cover-image { display: block; width: min(100%, 360px); border: 8px solid rgba(255,255,255,.75); border-radius: 32px; box-shadow: 0 17px 32px rgba(35,105,137,.2); transform: rotate(2deg); }
@@ -40,6 +40,12 @@
       .copyright-notice { max-width: 920px; margin: 8px auto 0; font-size: 12px; line-height: 1.65; }.copyright-notice p { margin: 0; }.copyright-notice p + p { margin-top: 6px; }
       .terms-link { padding: 0; border: 0; background: transparent; color: #287da9; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; }button.bio-link { width: 100%; background: transparent; font: inherit; text-align: left; cursor: pointer; }.result-caveat { font-size: 14px; }
       #termsPage .bio-panel { display: flex; flex-direction: column; width: min(100%, 640px); max-height: calc(100dvh - 44px); overflow: hidden; }#termsPage .terms-list { display: grid; min-height: 0; gap: 13px; padding-right: 5px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }.terms-section { padding: 16px 18px; border: 1px solid #dbe8ec; border-left: 5px solid #f15b52; border-radius: 14px; background: #f9fcfc; }.terms-section h3 { margin: 0 0 8px; color: #294b63; font-size: 17px; }.terms-section p { margin: 0; color: #526c80; font-size: 15px; line-height: 1.7; }.terms-section p + p { margin-top: 8px; }.terms-updated { margin: 2px 0 0; color: #708396; font-size: 13px; }
+      .gold-icon { background: #fff4d6; color: #bf8d20; }.care-home { margin-top: 0; }.prevention-header { border-color: #f1e1b4; background: linear-gradient(135deg, #fffaeb, #fffdf8); }.ems-menu-card:disabled { cursor: not-allowed; opacity: .55; }.ems-menu-card:disabled:hover { transform: none; border-color: #d9e7ec; box-shadow: none; }
+      .bmi-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }.bmi-field label { display: block; margin-bottom: 7px; color: #3f6560; font-size: 13px; font-weight: 800; }.bmi-field input, .bmi-field select { width: 100%; border: 1px solid #c9ded6; border-radius: 10px; padding: 11px 12px; background: #fbfffd; color: #294a44; font: inherit; }.bmi-error { grid-column: 1 / -1; margin: 0; padding: 10px 13px; border-radius: 10px; background: #fff0ed; color: #b9423e; font-size: 14px; font-weight: 800; }.bmi-error[hidden] { display: none; }.bmi-submit { grid-column: 1 / -1; width: min(100%, 330px); background: #2f9e76; box-shadow: 0 5px 0 #237457; }
+      .bmi-result { margin-top: 22px; padding: 22px; border: 1px solid #dce8ec; border-top: 7px solid var(--bmi-color); border-radius: 18px; background: #fbfdfd; }.bmi-result[hidden] { display: none; }.level-low { --bmi-color: #2785bc; }.level-ok { --bmi-color: #258772; }.level-watch { --bmi-color: #bf8d20; }.level-high { --bmi-color: #d94c49; }.bmi-result .bmi-value { margin: 0; color: var(--bmi-color); font-size: 40px; font-weight: 900; line-height: 1.1; }.bmi-value small { margin-left: 6px; font-size: 15px; }.bmi-category { display: inline-block; margin: 9px 0 4px; padding: 5px 12px; border-radius: 999px; background: var(--bmi-color); color: #fff; font-weight: 900; }.bmi-result ul { display: grid; gap: 8px; margin: 14px 0 0; padding-left: 21px; color: #526b7d; line-height: 1.7; }
+      .reference-table { display: grid; gap: 8px; margin: 16px 0 4px; }.reference-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; padding: 12px 15px; border: 1px solid #dce8ec; border-left: 6px solid var(--bmi-color); border-radius: 13px; background: #fff; transition: .15s; }.reference-row b { color: var(--bmi-color); font-size: 17px; }.reference-row span { color: #526b7d; font-size: 14px; line-height: 1.55; }.reference-row.is-match { background: #fffbea; box-shadow: 0 0 0 2px var(--bmi-color); }
+      @media (max-width: 500px) { .reference-row { grid-template-columns: 1fr; gap: 3px; } }
+      @media (max-width: 500px) { .bmi-form { grid-template-columns: 1fr; }.bmi-result { padding: 18px; }.bmi-value { font-size: 34px; } }
       @media (max-width: 800px) { .ems-menu-grid, .ems-info-grid { grid-template-columns: 1fr; }.ems-menu-card { min-height: 0; }.ems-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (max-width: 500px) { .ems-header { padding: 23px 19px; }.ems-detail { padding: 18px; }.ems-alert { flex-wrap: wrap; }.ems-alert a { margin-left: 0; }.ems-flow { grid-template-columns: 1fr; } }
       @media (max-width: 800px) { .tool-grid { grid-template-columns: 1fr; }.home-card { min-height: 190px; }.emergency-note { align-items: flex-start; }.emergency-note a { display: none; } }
@@ -54,7 +60,7 @@
         <span class="tool-label">醫療工具包</span>
         <button class="bio-button version-button" id="versionButton" type="button">版本記錄</button>
         <button class="bio-button" id="bioButton" type="button">關於作者</button>
-        <select class="quiet-button language-select" id="languageSelect" aria-label="語言"><option value="zh-TW">繁體中文</option><option value="zh-CN">简体中文</option><option value="en">English</option></select>
+        <select class="quiet-button language-select" id="languageSelect" aria-label="語言"><option value="zh-TW">繁體中文</option><option value="zh-CN" disabled>简体中文（準備中）</option><option value="en" disabled>English（準備中）</option></select>
         <button class="quiet-button" id="homeButton" type="button" hidden>返回首頁</button>
         <button class="quiet-button" id="restartButton" type="button" hidden>重新檢查</button>
       </header>
@@ -89,6 +95,15 @@
           </article>
           <article class="home-card future-card" aria-label="更多健康工具即將推出">
             <div class="card-icon mint-icon">＋</div><div><span class="card-tag">更多工具</span><h3>持續新增中</h3><p>我們會持續整理實用、容易使用的健康工具。</p></div><span class="coming-soon">敬請期待</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="tool-home care-home" aria-labelledby="careHeading">
+        <div class="section-heading"><div><p class="eyebrow">日常保健</p><h2 id="careHeading">平時照顧好自己。</h2></div></div>
+        <div class="tool-grid care-grid">
+          <article class="home-card future-card">
+            <div class="card-icon gold-icon">♥</div><div><span class="card-tag">健康管理</span><h3>預防保健</h3><p>計算 BMI，並認識飯前血糖與糖化血色素參考值。</p></div><button class="card-link" id="preventionStartButton" type="button">開始了解 <span>→</span></button>
           </article>
         </div>
       </section>
@@ -134,6 +149,79 @@
 
         <div class="triage-emergency"><div class="emergency-icon">!</div><div><strong>尚未到院且出現危急徵象？</strong><p>無意識、呼吸困難、大量出血、持續胸痛或病情突然惡化，請立即撥打 119。</p></div><a href="tel:119">撥打 119</a></div>
         <p class="triage-source">資料來源：<a href="https://www.nhi.gov.tw/ch/cp-2655-9ad69-2950-1.html" target="_blank" rel="noopener noreferrer">衛生福利部中央健康保險署・檢傷分類民眾衛教版</a>。實際等候時間可能依現場病情與醫療量能調整。</p>
+      </section>
+
+      <section class="ems-area prevention-area" id="preventionArea" hidden aria-labelledby="preventionTitle" data-no-translate>
+        <div id="preventionHub">
+          <header class="ems-header prevention-header">
+            <p class="eyebrow">日常保健</p>
+            <h2 id="preventionTitle">預防保健</h2>
+            <p>平時留意體重與血糖，有助於及早發現健康風險。本頁提供參考值與計算工具，結果不能取代健康檢查或醫師診斷。</p>
+          </header>
+          <h3 class="ems-menu-heading">選擇想使用的工具</h3>
+          <div class="ems-menu-grid">
+            <button class="ems-menu-card" id="bmiButton" type="button" aria-controls="bmiPage"><span class="ems-menu-icon">⚖</span><h3>BMI 計算</h3><p>輸入身高、體重，了解身體質量指數與健康體重範圍。</p></button>
+            <button class="ems-menu-card" id="glucoseButton" type="button" aria-controls="glucosePage"><span class="ems-menu-icon">◔</span><h3>飯前血糖參考值</h3><p>認識空腹血糖的參考範圍，並對照自己的量測結果。</p></button>
+            <button class="ems-menu-card" id="hba1cButton" type="button" aria-controls="hba1cPage"><span class="ems-menu-icon">％</span><h3>糖化血色素參考值</h3><p>了解 HbA1c 代表的意義與參考範圍。</p></button>
+          </div>
+        </div>
+
+        <article class="ems-detail" id="bmiPage" hidden aria-labelledby="bmiTitle">
+          <button class="ems-back-button" type="button" data-prevention-back>← 返回預防保健</button>
+          <p class="eyebrow">身體質量指數</p><h3 id="bmiTitle">BMI 計算</h3>
+          <p>BMI＝體重（公斤）÷ 身高（公尺）÷ 身高（公尺）。本工具適用 18 歲（含）以上成人；兒童及青少年的 BMI 需依年齡與性別判讀，請參考國健署的兒童與青少年建議值。</p>
+          <form class="bmi-form" id="bmiForm" novalidate>
+            <div class="bmi-field"><label for="bmiHeight">身高（公分）</label><input id="bmiHeight" type="number" inputmode="decimal" min="100" max="250" step="0.1" placeholder="例如 165" /></div>
+            <div class="bmi-field"><label for="bmiWeight">體重（公斤）</label><input id="bmiWeight" type="number" inputmode="decimal" min="20" max="300" step="0.1" placeholder="例如 60" /></div>
+            <div class="bmi-field"><label for="bmiWaist">腰圍（公分，選填）</label><input id="bmiWaist" type="number" inputmode="decimal" min="40" max="200" step="0.1" placeholder="例如 78" /></div>
+            <div class="bmi-field"><label for="bmiSex">性別（判讀腰圍時需要）</label><select id="bmiSex"><option value="">未選擇</option><option value="male">男性</option><option value="female">女性</option></select></div>
+            <p class="bmi-error" id="bmiError" hidden role="alert"></p>
+            <button class="primary-button bmi-submit" type="submit">計算 BMI</button>
+          </form>
+          <section class="bmi-result" id="bmiResult" hidden aria-live="polite"></section>
+          <div class="ems-note">孕婦或哺乳期、肌肉量特別多（例如運動員）、水腫或截肢等情況，BMI 可能無法正確反映體位。長者或有慢性病者的體重目標，請與醫療人員討論。輸入的數值只在您的裝置上計算，不會上傳。</div>
+          <p class="ems-source">內容參考：<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=542&amp;pid=9737" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・成人健康體位標準</a>、<a href="https://www.hpa.gov.tw/Pages/List.aspx?nodeid=189" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・成人預防保健</a>。</p>
+        </article>
+
+        <article class="ems-detail" id="glucosePage" hidden aria-labelledby="glucoseTitle">
+          <button class="ems-back-button" type="button" data-prevention-back>← 返回預防保健</button>
+          <p class="eyebrow">空腹血糖</p><h3 id="glucoseTitle">飯前血糖參考值</h3>
+          <p>飯前血糖是指空腹至少 8 小時（可以喝白開水）後量測的血糖值。下表為非懷孕成人的參考範圍，單位為 mg/dL。</p>
+          <div class="reference-table">
+            <div class="reference-row level-low"><b>低於 70</b><span>血糖偏低</span></div>
+            <div class="reference-row level-ok"><b>70～99</b><span>正常範圍</span></div>
+            <div class="reference-row level-watch"><b>100～125</b><span>糖尿病前期（空腹血糖偏高）</span></div>
+            <div class="reference-row level-high"><b>126 以上</b><span>達糖尿病診斷參考值，需再次檢驗確認</span></div>
+          </div>
+          <form class="bmi-form" id="glucoseForm" novalidate>
+            <div class="bmi-field"><label for="glucoseValue">我的飯前血糖（mg/dL）</label><input id="glucoseValue" type="number" inputmode="numeric" min="20" max="600" step="1" placeholder="例如 92" /></div>
+            <p class="bmi-error" id="glucoseError" hidden role="alert"></p>
+            <button class="primary-button bmi-submit" type="submit">對照參考值</button>
+          </form>
+          <section class="bmi-result" id="glucoseResult" hidden aria-live="polite"></section>
+          <aside class="ems-alert"><div><strong>出現低血糖症狀時</strong><br />冒冷汗、發抖、心悸、頭暈或意識混亂時，若意識清楚且能吞嚥，可先吃 15 公克含糖食物（例如半杯果汁或 3～4 顆方糖），15 分鐘後再量。若意識不清或無法吞嚥，不要餵食，請立即撥打 119。</div><a href="tel:119">撥打 119</a></aside>
+          <div class="ems-note">家用血糖機以指尖血量測，適合自我監測；糖尿病的診斷需由醫療院所抽血檢驗，並重複確認。已確診糖尿病者的控制目標因人而異，請依醫師訂定的目標為準；懷孕期間的標準也不同，請依產檢醫師指示。血糖很高且伴隨極度口渴、多尿、噁心嘔吐、呼吸急促或意識改變時，請儘速就醫或撥打 119。</div>
+          <p class="ems-source">內容參考：<a href="https://www.hpa.gov.tw/Pages/List.aspx?nodeid=359" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・糖尿病</a>、<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4878&amp;pid=19042" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・定期檢查搭配健康習慣，4招顧血糖</a>。</p>
+        </article>
+
+        <article class="ems-detail" id="hba1cPage" hidden aria-labelledby="hba1cTitle">
+          <button class="ems-back-button" type="button" data-prevention-back>← 返回預防保健</button>
+          <p class="eyebrow">HbA1c</p><h3 id="hba1cTitle">糖化血色素參考值</h3>
+          <p>糖化血色素（HbA1c）反映過去約 2～3 個月的平均血糖，抽血前不需要空腹。下表為非懷孕成人的參考範圍。</p>
+          <div class="reference-table">
+            <div class="reference-row level-ok"><b>低於 5.7%</b><span>正常範圍</span></div>
+            <div class="reference-row level-watch"><b>5.7%～6.4%</b><span>糖尿病前期</span></div>
+            <div class="reference-row level-high"><b>6.5% 以上</b><span>達糖尿病診斷參考值，需再次檢驗確認</span></div>
+          </div>
+          <form class="bmi-form" id="hba1cForm" novalidate>
+            <div class="bmi-field"><label for="hba1cValue">我的糖化血色素（%）</label><input id="hba1cValue" type="number" inputmode="decimal" min="3" max="20" step="0.1" placeholder="例如 5.4" /></div>
+            <p class="bmi-error" id="hba1cError" hidden role="alert"></p>
+            <button class="primary-button bmi-submit" type="submit">對照參考值</button>
+          </form>
+          <section class="bmi-result" id="hba1cResult" hidden aria-live="polite"></section>
+          <div class="ems-note">貧血、近期大量失血或輸血、懷孕、腎臟疾病或血紅素異常等情況，可能影響糖化血色素的準確度。已確診糖尿病者，許多成人的控制目標約為 7% 以下，但每個人的目標不同，請依醫師訂定的目標為準。</div>
+          <p class="ems-source">內容參考：<a href="https://www.hpa.gov.tw/Pages/List.aspx?nodeid=359" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・糖尿病</a>、<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4878&amp;pid=19042" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・定期檢查搭配健康習慣，4招顧血糖</a>。</p>
+        </article>
       </section>
 
       <section class="ems-area" id="emsArea" hidden aria-labelledby="emsTitle" data-no-translate>
@@ -235,7 +323,8 @@
           <section class="version-day"><h3>2026-10-29</h3><ul><li>初始專案上架</li><li>新增：GCS 昏迷指數</li><li>新增：檢傷分類資訊卡</li><li>新增：生命徵象測量</li></ul></section>
           <section class="version-day"><h3>2026-10-30</h3><ul><li>新增：贊助連結</li><li>新增：版本記錄頁面</li><li>修正：版本記錄頁捲動</li><li>修正：整合各年齡層生命徵象參考值</li><li>新增：儲存結果圖片按鈕</li></ul></section>
           <section class="version-day"><h3>2026-11-01</h3><ul><li>新增：簡體中文版本</li><li>新增：英語版本</li></ul></section>
-          <section class="version-day"><h3>2026-11-03</h3><ul><li>修正：重新建構專案結構，暫停開放簡中及英文版本，未來更新以繁體中文版優先，其他語言版本將視情況再行開放。</li><li>新增：認識緊急醫療救護服務系統（EMS）</li><li>新增：使用須知與隱私說明</li><li>修正：免責聲明與著作權聲明</li></ul></section>
+          <section class="version-day"><h3>2026-11-03</h3><ul><li>新增：認識緊急醫療救護服務系統（EMS）</li><li>新增：使用須知與隱私說明</li><li>修正：免責聲明與著作權聲明</li></ul></section>
+          <section class="version-day"><h3>2026-11-04</h3><ul><li>修正：簡體中文及英文選項暫時關閉，標示為準備中</li><li>新增：預防保健（BMI 計算）</li><li>新增：飯前血糖及糖化血色素參考值</li></ul></section>
         </div>
       </article>
     </section>
@@ -266,7 +355,7 @@
         <p>引用的參考資料著作權歸原權利人所有。授權申請請透過「關於作者」頁的回報問題表單聯繫。</p>
       </div>
     </footer>
-    <script src="i18n.js?v=7"></script>
-    <script src="app.js?v=7"></script>
+    <script src="i18n.js?v=10"></script>
+    <script src="app.js?v=10"></script>
   </body>
 </html>

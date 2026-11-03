@@ -36,6 +36,11 @@ const emsHub = document.querySelector('#emsHub');
 const emsPages = ['#emsOverviewPage', '#emsAmbulancePage', '#emsEmtPage'].map(selector => document.querySelector(selector));
 const emsStartButton = document.querySelector('#emsStartButton');
 let previousEmsButton = null;
+const preventionArea = document.querySelector('#preventionArea');
+const preventionHub = document.querySelector('#preventionHub');
+const preventionPages = ['#bmiPage', '#glucosePage', '#hba1cPage'].map(selector => document.querySelector(selector));
+const preventionStartButton = document.querySelector('#preventionStartButton');
+let previousPreventionButton = null;
 const vitalsArea = document.querySelector('#vitalsArea');
 const vitalsStartButton = document.querySelector('#vitalsStartButton');
 const vitalsForm = document.querySelector('#vitalsForm');
@@ -177,7 +182,7 @@ function showResult(isEmergency){
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startCheck(){ i18n.setTool('stroke'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function startTriage(){ i18n.setTool('triage'); homePage.hidden = true; vitalsArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startVitals(){ i18n.setTool('vitals'); homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; vitalsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; vitalsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startEms(){ i18n.setTool('ems'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; emsPages.forEach(page => { page.hidden = true; }); emsHub.hidden = false; emsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; emsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelector('#emsOverviewButton').focus(); }
@@ -190,6 +195,14 @@ document.querySelector('#emsOverviewButton').addEventListener('click', event => 
 document.querySelector('#emsAmbulanceButton').addEventListener('click', event => showEmsPage(emsPages[1], event.currentTarget));
 document.querySelector('#emsEmtButton').addEventListener('click', event => showEmsPage(emsPages[2], event.currentTarget));
 document.querySelectorAll('[data-ems-back]').forEach(button => button.addEventListener('click', showEmsHub));
+function startPrevention(){ i18n.setTool('prevention'); homePage.hidden = true; preventionPages.forEach(page => { page.hidden = true; }); preventionHub.hidden = false; preventionArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; preventionArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelector('#bmiButton').focus(); }
+function showPreventionPage(page, opener){ previousPreventionButton = opener; preventionHub.hidden = true; preventionPages.forEach(item => { item.hidden = item !== page; }); page.scrollIntoView({ behavior: 'smooth', block: 'start' }); page.querySelector('[data-prevention-back]').focus(); }
+function showPreventionHub(){ preventionPages.forEach(page => { page.hidden = true; }); preventionHub.hidden = false; preventionArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); previousPreventionButton?.focus(); }
+preventionStartButton.addEventListener('click', startPrevention);
+document.querySelector('#bmiButton').addEventListener('click', event => showPreventionPage(preventionPages[0], event.currentTarget));
+document.querySelector('#glucoseButton').addEventListener('click', event => showPreventionPage(preventionPages[1], event.currentTarget));
+document.querySelector('#hba1cButton').addEventListener('click', event => showPreventionPage(preventionPages[2], event.currentTarget));
+document.querySelectorAll('[data-prevention-back]').forEach(button => button.addEventListener('click', showPreventionHub));
 cardStartButton.addEventListener('click', startCheck);
 restartButton.addEventListener('click', reset);
 homeButton.addEventListener('click', returnHome);
@@ -344,6 +357,91 @@ function updateAgePreview(){
 }
 ageValueInput.addEventListener('input', updateAgePreview);
 ageUnitSelect.addEventListener('change', updateAgePreview);
+
+// Adult cut-offs from the Health Promotion Administration; classify on the rounded value so the shown number and category agree.
+const bmiCategories = [
+  { below: 18.5, name: '體重過輕', type: 'level-low', advice: '建議均衡攝取足夠的熱量與蛋白質，搭配適度活動增加肌力。若沒有刻意減重卻持續變瘦，或伴隨食慾不振、疲倦，請就醫評估。' },
+  { below: 24, name: '健康體重', type: 'level-ok', advice: '請繼續維持均衡飲食與規律活動，並定期量測體重與腰圍。' },
+  { below: 27, name: '體重過重', type: 'level-watch', advice: '可從調整飲食份量、減少含糖飲料、增加日常活動開始，循序漸進管理體重。' },
+  { below: Infinity, name: '肥胖', type: 'level-high', advice: '肥胖會提高糖尿病、高血壓及心血管疾病的風險，建議與醫師或營養師討論適合自己的體重管理計畫。' }
+];
+const waistLimits = { male: 90, female: 80 };
+const bmiForm = document.querySelector('#bmiForm');
+const bmiResult = document.querySelector('#bmiResult');
+const bmiError = document.querySelector('#bmiError');
+function inRange(value, min, max){ return Number.isFinite(value) && value >= min && value <= max; }
+bmiForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const height = Number.parseFloat(document.querySelector('#bmiHeight').value);
+  const weight = Number.parseFloat(document.querySelector('#bmiWeight').value);
+  const waistText = document.querySelector('#bmiWaist').value.trim();
+  const waist = Number.parseFloat(waistText);
+  const sex = document.querySelector('#bmiSex').value;
+  let error = '';
+  if(!inRange(height, 100, 250)) error = '請輸入 100 至 250 公分之間的身高。';
+  else if(!inRange(weight, 20, 300)) error = '請輸入 20 至 300 公斤之間的體重。';
+  else if(waistText && !inRange(waist, 40, 200)) error = '請輸入 40 至 200 公分之間的腰圍，或留空。';
+  else if(waistText && !waistLimits[sex]) error = '判讀腰圍需要選擇性別。';
+  bmiError.hidden = !error;
+  bmiError.textContent = error;
+  if(error){ bmiResult.hidden = true; return; }
+  const meters = height / 100;
+  const bmi = Math.round(weight / (meters * meters) * 10) / 10;
+  const category = bmiCategories.find(item => bmi < item.below);
+  const healthyLow = (18.5 * meters * meters).toFixed(1);
+  const healthyHigh = (24 * meters * meters).toFixed(1);
+  const waistLine = !waistText ? '' : waist >= waistLimits[sex]
+    ? `<li>腰圍 ${waist} 公分，已達腹部肥胖標準（${sex === 'male' ? '男性 ≥ 90' : '女性 ≥ 80'} 公分）。腹部脂肪較多，與代謝症候群及心血管疾病風險相關${category.type === 'level-ok' ? '，即使 BMI 正常也建議留意' : ''}。</li>`
+    : `<li>腰圍 ${waist} 公分，在理想範圍內（${sex === 'male' ? '男性 < 90' : '女性 < 80'} 公分）。</li>`;
+  bmiResult.className = `bmi-result ${category.type}`;
+  bmiResult.hidden = false;
+  bmiResult.innerHTML = `<p class="bmi-value">${bmi.toFixed(1)}<small>kg/m²</small></p><span class="bmi-category">${category.name}</span><ul><li>${category.advice}</li><li>以您的身高 ${height} 公分，健康體重約為 ${healthyLow}～${healthyHigh} 公斤（BMI 18.5～未滿 24）。</li>${waistLine}<li>一般成人可參考每週累積至少 150 分鐘中等強度身體活動；有慢性病或關節問題者，開始運動前請先諮詢醫療人員。</li><li>30～39 歲每 5 年 1 次、40～64 歲每 3 年 1 次、65 歲以上每年 1 次，可使用國健署補助的成人預防保健服務；實際資格依國健署公告為準。</li></ul>`;
+  bmiResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// Non-pregnant adult cut-offs from the Health Promotion Administration; the value is rounded to the input's precision before matching a row.
+function setupReferenceCheck({ page, form, input, error, result, decimals, min, max, unit, errorText, levels }){
+  const rows = document.querySelectorAll(`${page} .reference-row`);
+  const resultElement = document.querySelector(result);
+  const errorElement = document.querySelector(error);
+  document.querySelector(form).addEventListener('submit', event => {
+    event.preventDefault();
+    const raw = Number.parseFloat(document.querySelector(input).value);
+    const valid = inRange(raw, min, max);
+    errorElement.hidden = valid;
+    errorElement.textContent = valid ? '' : errorText;
+    rows.forEach(row => row.classList.remove('is-match'));
+    if(!valid){ resultElement.hidden = true; return; }
+    const value = Math.round(raw * 10 ** decimals) / 10 ** decimals;
+    const index = levels.findIndex(item => value < item.below);
+    const level = levels[index];
+    rows[index]?.classList.add('is-match');
+    resultElement.className = `bmi-result ${level.type}`;
+    resultElement.hidden = false;
+    resultElement.innerHTML = `<p class="bmi-value">${value.toFixed(decimals)}<small>${unit}</small></p><span class="bmi-category">${level.name}</span><ul>${level.advice.map(item => `<li>${item}</li>`).join('')}</ul>`;
+    resultElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+const confirmByLab = '單次結果不能確診，請儘快就醫，由醫療院所抽血檢驗並重複確認。';
+setupReferenceCheck({
+  page: '#glucosePage', form: '#glucoseForm', input: '#glucoseValue', error: '#glucoseError', result: '#glucoseResult',
+  decimals: 0, min: 20, max: 600, unit: 'mg/dL', errorText: '請輸入 20 至 600 mg/dL 之間的血糖值。',
+  levels: [
+    { below: 70, name: '血糖偏低', type: 'level-low', advice: ['低於 70 mg/dL 屬於血糖偏低。若有冒冷汗、發抖、心悸、頭暈或意識混亂，請依下方的低血糖處理方式，必要時撥打 119。'] },
+    { below: 100, name: '正常範圍', type: 'level-ok', advice: ['在一般成人的空腹血糖正常範圍內。請維持均衡飲食與規律活動，並定期健康檢查。'] },
+    { below: 126, name: '糖尿病前期', type: 'level-watch', advice: ['空腹血糖偏高，落在糖尿病前期的參考範圍。及早調整飲食、活動與體重，有機會延緩或避免進展為糖尿病。', '建議與醫師討論後續追蹤方式。'] },
+    { below: Infinity, name: '達糖尿病參考值', type: 'level-high', advice: ['已達糖尿病的空腹血糖診斷參考值（126 mg/dL 以上）。', confirmByLab] }
+  ]
+});
+setupReferenceCheck({
+  page: '#hba1cPage', form: '#hba1cForm', input: '#hba1cValue', error: '#hba1cError', result: '#hba1cResult',
+  decimals: 1, min: 3, max: 20, unit: '%', errorText: '請輸入 3 至 20 % 之間的糖化血色素值。',
+  levels: [
+    { below: 5.7, name: '正常範圍', type: 'level-ok', advice: ['在一般成人的糖化血色素正常範圍內。請維持均衡飲食與規律活動，並定期健康檢查。'] },
+    { below: 6.5, name: '糖尿病前期', type: 'level-watch', advice: ['落在糖尿病前期的參考範圍。及早調整飲食、活動與體重，有機會延緩或避免進展為糖尿病。', '建議與醫師討論後續追蹤方式。'] },
+    { below: Infinity, name: '達糖尿病參考值', type: 'level-high', advice: ['已達糖尿病的糖化血色素診斷參考值（6.5% 以上）。', confirmByLab] }
+  ]
+});
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
 
 })();

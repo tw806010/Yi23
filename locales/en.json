@@ -295,7 +295,16 @@
     "rights.gcsBeta": "Beta: this feature is still being validated. Results are for recording and communication only and must not be used as a basis for medical treatment.",
     "rights.versionTerms": "Added: Terms of use & privacy",
     "rights.versionNotice": "Updated: Disclaimer and copyright notice",
-    "rights.pngGeneratedAt": "Generated: {time}"
+    "rights.pngGeneratedAt": "Generated: {time}",
+    "legacy.e372826f33c2": "Everyday health",
+    "legacy.8abe44b123cc": "Look after yourself every day.",
+    "legacy.fb95e9c5888e": "Health management",
+    "legacy.414b9875dc26": "Preventive care",
+    "legacy.3030e85639f0": "Calculate BMI and learn the reference ranges for fasting blood glucose and HbA1c.",
+    "legacy.d181bea82e59": "Learn more",
+    "legacy.b1f1db052906": "Fixed: Simplified Chinese and English are temporarily unavailable and marked as coming soon",
+    "legacy.2fe2bf81fe39": "Added: Preventive care (BMI calculator)",
+    "legacy.cf4d067097b0": "Added: Fasting blood glucose and HbA1c reference ranges"
   },
   "legacyKeys": {
     "2026-10-29": "legacy.5ef2d8c8a905",
@@ -590,6 +599,15 @@
     "測試版：本功能仍在驗證中，結果僅供紀錄與溝通參考，不能作為醫療處置依據。": "rights.gcsBeta",
     "本圖片由使用者在本機產生，非醫療診斷文件或正式病歷。": "legacy.5e6b5b86f7ef",
     "新增：使用須知與隱私說明": "rights.versionTerms",
-    "修正：免責聲明與著作權聲明": "rights.versionNotice"
+    "修正：免責聲明與著作權聲明": "rights.versionNotice",
+    "日常保健": "legacy.e372826f33c2",
+    "平時照顧好自己。": "legacy.8abe44b123cc",
+    "健康管理": "legacy.fb95e9c5888e",
+    "預防保健": "legacy.414b9875dc26",
+    "計算 BMI，並認識飯前血糖與糖化血色素參考值。": "legacy.3030e85639f0",
+    "開始了解": "legacy.d181bea82e59",
+    "修正：簡體中文及英文選項暫時關閉，標示為準備中": "legacy.b1f1db052906",
+    "新增：預防保健（BMI 計算）": "legacy.2fe2bf81fe39",
+    "新增：飯前血糖及糖化血色素參考值": "legacy.cf4d067097b0"
   }
 }

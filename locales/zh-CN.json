@@ -295,7 +295,16 @@
     "rights.gcsBeta": "测试版：本功能仍在验证中，结果仅供记录与沟通参考，不能作为医疗处置依据。",
     "rights.versionTerms": "新增：使用须知与隐私说明",
     "rights.versionNotice": "修正：免责声明与著作权声明",
-    "rights.pngGeneratedAt": "产生时间：{time}"
+    "rights.pngGeneratedAt": "产生时间：{time}",
+    "legacy.e372826f33c2": "日常保健",
+    "legacy.8abe44b123cc": "平时照顾好自己。",
+    "legacy.fb95e9c5888e": "健康管理",
+    "legacy.414b9875dc26": "预防保健",
+    "legacy.3030e85639f0": "计算 BMI，并认识空腹血糖与糖化血红蛋白参考值。",
+    "legacy.d181bea82e59": "开始了解",
+    "legacy.b1f1db052906": "修正：简体中文及英文选项暂时关闭，标示为准备中",
+    "legacy.2fe2bf81fe39": "新增：预防保健（BMI 计算）",
+    "legacy.cf4d067097b0": "新增：空腹血糖及糖化血红蛋白参考值"
   },
   "legacyKeys": {
     "2026-10-29": "legacy.5ef2d8c8a905",
@@ -590,7 +599,16 @@
     "測試版：本功能仍在驗證中，結果僅供紀錄與溝通參考，不能作為醫療處置依據。": "rights.gcsBeta",
     "本圖片由使用者在本機產生，非醫療診斷文件或正式病歷。": "legacy.5e6b5b86f7ef",
     "新增：使用須知與隱私說明": "rights.versionTerms",
-    "修正：免責聲明與著作權聲明": "rights.versionNotice"
+    "修正：免責聲明與著作權聲明": "rights.versionNotice",
+    "日常保健": "legacy.e372826f33c2",
+    "平時照顧好自己。": "legacy.8abe44b123cc",
+    "健康管理": "legacy.fb95e9c5888e",
+    "預防保健": "legacy.414b9875dc26",
+    "計算 BMI，並認識飯前血糖與糖化血色素參考值。": "legacy.3030e85639f0",
+    "開始了解": "legacy.d181bea82e59",
+    "修正：簡體中文及英文選項暫時關閉，標示為準備中": "legacy.b1f1db052906",
+    "新增：預防保健（BMI 計算）": "legacy.2fe2bf81fe39",
+    "新增：飯前血糖及糖化血色素參考值": "legacy.cf4d067097b0"
   },
   "phraseOverrides": {
     "急診檢傷分類": "急诊分诊",

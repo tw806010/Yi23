@@ -12,15 +12,19 @@
     triage: ['zh-TW', 'zh-CN', 'en'],
     about: ['zh-TW', 'zh-CN', 'en'],
     versionHistory: ['zh-TW', 'zh-CN', 'en'],
-    ems: ['zh-TW']
+    ems: ['zh-TW'],
+    prevention: ['zh-TW']
   });
+  // Locales open to users site-wide. Add 'zh-CN' or 'en' back (and drop the 準備中 label in index.html) to reopen them.
+  const ENABLED_LOCALES = Object.freeze(['zh-TW']);
   const bundles = {};
   const originalTextNodes = new WeakMap();
   const originalAttributes = new WeakMap();
   const localeSelect = document.querySelector('#languageSelect');
   const languageNotice = document.querySelector('#languageNotice');
   const savedLocale = readSavedLocale();
-  let preferredLocale = LOCALE_FILES[savedLocale] ? savedLocale : 'zh-TW';
+  // A saved choice of a closed locale falls back quietly; it stays in storage for when that locale reopens.
+  let preferredLocale = LOCALE_FILES[savedLocale] && ENABLED_LOCALES.includes(savedLocale) ? savedLocale : 'zh-TW';
   let activeLocale = 'zh-TW';
   let activeTool = 'home';
   let englishExactMap = new Map();
@@ -187,7 +191,7 @@
     }
   }
   function getAvailableLocales(tool = activeTool) {
-    return [...(TOOL_LOCALES[tool] || ['zh-TW'])].filter(locale => !!bundles[locale]);
+    return [...(TOOL_LOCALES[tool] || ['zh-TW'])].filter(locale => !!bundles[locale] && ENABLED_LOCALES.includes(locale));
   }
   function setTool(tool) {
     activeTool = tool;

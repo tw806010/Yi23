@@ -1,6 +1,6 @@
-const CACHE = 'medical-123-v7';
+const CACHE = 'medical-123-v10';
 // Keep the ?v= query in sync with index.html so offline requests match the precache.
-const ASSETS = ['./', './index.html', './style.css?v=7', './i18n.js?v=7', './app.js?v=7', './locales/zh-TW.json', './locales/zh-CN.json', './locales/en.json', './manifest.webmanifest', './icon.png'];
+const ASSETS = ['./', './index.html', './style.css?v=10', './i18n.js?v=10', './app.js?v=10', './locales/zh-TW.json', './locales/zh-CN.json', './locales/en.json', './manifest.webmanifest', './icon.png'];
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);
   await cache.addAll(ASSETS);
