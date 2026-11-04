@@ -13,7 +13,8 @@
     about: ['zh-TW', 'zh-CN', 'en'],
     versionHistory: ['zh-TW', 'zh-CN', 'en'],
     ems: ['zh-TW'],
-    prevention: ['zh-TW']
+    prevention: ['zh-TW'],
+    fall: ['zh-TW']
   });
   // Locales open to users site-wide. Add 'zh-CN' or 'en' back (and drop the 準備中 label in index.html) to reopen them.
   const ENABLED_LOCALES = Object.freeze(['zh-TW']);

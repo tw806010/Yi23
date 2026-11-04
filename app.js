@@ -182,7 +182,7 @@ function showResult(isEmergency){
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startCheck(){ i18n.setTool('stroke'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); document.querySelector('#fallArea').hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function startTriage(){ i18n.setTool('triage'); homePage.hidden = true; vitalsArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startVitals(){ i18n.setTool('vitals'); homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; vitalsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; vitalsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startEms(){ i18n.setTool('ems'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; emsPages.forEach(page => { page.hidden = true; }); emsHub.hidden = false; emsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; emsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelector('#emsOverviewButton').focus(); }
@@ -442,6 +442,122 @@ setupReferenceCheck({
     { below: Infinity, name: '達糖尿病參考值', type: 'level-high', advice: ['已達糖尿病的糖化血色素診斷參考值（6.5% 以上）。', confirmByLab] }
   ]
 });
+
+// CDC STEADI "Stay Independent" checklist (2023 brochure): items 1–2 score 2 points, the rest 1; 4 or more points, or any fall in the past year (a STEADI key question), means higher risk.
+const fallAdvice = {
+  history: '曾經跌倒：下次看診時，請主動告訴醫師跌倒的時間、地點與經過，即使當時沒有受傷。',
+  aid: '使用拐杖或助行器：請醫療人員或物理治療師確認輔具的種類與高度合適，並學會正確使用。',
+  balance: '平衡變差：規律運動並加入平衡訓練，例如國健署的長者活力體能訓練；在家可加裝扶手，走動時穿合腳的防滑鞋。',
+  fear: '擔心跌倒：可以和醫師或家人討論這份擔心；適度運動、改善居家環境，有助於建立行動的信心，不要因為害怕而減少活動。',
+  strength: '腿部肌力不足：規律做肌力訓練，並攝取足夠的熱量與蛋白質；有慢性病或關節問題者，開始運動前請先諮詢醫療人員。',
+  toilet: '常急著上廁所：夜間保持臥室到廁所的路線有照明，必要時使用床邊便器，並和醫師討論頻尿或急尿的問題。',
+  feet: '腳部麻木：請告訴醫師並檢查原因（例如糖尿病引起的神經病變），穿合腳、包覆性好的防滑鞋。',
+  medicine: '用藥：請醫師或藥師評估目前使用的所有藥物（包含助眠、情緒、降血壓藥物及保健食品）；請勿自行停藥或調整劑量。',
+  mood: '情緒低落：請和醫師討論，必要時尋求專業協助；若有輕生念頭，請撥打安心專線 1925 或 119。'
+};
+const fallGeneralAdvice = [
+  '國健署「防跌三步」：一、充足營養、規律運動；二、慢性病管理，定期量測血壓、血糖與血脂；三、用藥安全，定期自我評估。',
+  '每年檢查視力，眼鏡度數不合時請更換。',
+  '居家環境：走道照明充足、地面保持乾燥防滑，移除電線、雜物等容易絆倒的障礙物，浴室與樓梯加裝扶手。',
+  '可加入國健署「長者量六力」LINE 官方帳號（<a href="https://line.me/R/ti/p/@hpaicope" target="_blank" rel="noopener noreferrer">@hpaicope</a>），建議每半年評估一次認知、行動、營養、視力、聽力與憂鬱等六項能力。'
+];
+const fallFullQuestions = [
+  { points: 2, topic: 'history', label: '過去一年曾跌倒', text: '{who}過去一年內是否曾經跌倒？', why: '曾經跌倒過的人，再次跌倒的機會較高。' },
+  { points: 2, topic: 'aid', label: '使用或被建議使用拐杖、助行器', text: '{who}是否使用，或曾被建議使用拐杖或助行器，才能安全行走？', why: '已被建議使用拐杖或助行器的人，跌倒的機會可能已經較高。' },
+  { points: 1, topic: 'balance', label: '走路時有時覺得不穩', text: '{who}走路時是否有時會覺得不穩？', why: '走路不穩或需要扶東西，是平衡變差的徵兆。' },
+  { points: 1, topic: 'balance', label: '在家需扶家具走動', text: '{who}在家走動時，是否需要扶著家具穩住身體？', why: '這也是平衡變差的徵兆。' },
+  { points: 1, topic: 'fear', label: '擔心跌倒', text: '{who}是否擔心自己會跌倒？', why: '擔心跌倒的人，跌倒的機會較高。' },
+  { points: 1, topic: 'strength', label: '從椅子起身需用手撐', text: '{who}從椅子上站起來時，是否需要用手撐？', why: '這是腿部肌力不足的徵兆，而肌力不足是跌倒的主要原因之一。' },
+  { points: 1, topic: 'strength', label: '跨上台階邊緣有困難', text: '{who}跨上人行道或台階邊緣時，是否有點困難？', why: '這也是腿部肌力不足的徵兆。' },
+  { points: 1, topic: 'toilet', label: '常急著上廁所', text: '{who}是否常常需要急著去上廁所？', why: '急著上廁所，尤其是在夜間，會增加跌倒的機會。' },
+  { points: 1, topic: 'feet', label: '腳部有些地方失去感覺', text: '{who}的腳是否有些地方失去感覺（麻木）？', why: '腳部麻木可能造成絆倒，進而跌倒。' },
+  { points: 1, topic: 'medicine', label: '藥物有時讓人頭暈或疲倦', text: '{who}服用的藥物，是否有時讓{who}頭暈或比平常更疲倦？', why: '藥物的副作用有時會增加跌倒的機會。' },
+  { points: 1, topic: 'medicine', label: '服用助眠或改善情緒的藥物', text: '{who}是否服用幫助睡眠或改善情緒的藥物？', why: '這類藥物有時會增加跌倒的機會。' },
+  { points: 1, topic: 'mood', label: '常覺得難過或憂鬱', text: '{who}是否常常覺得難過或憂鬱？', why: '情緒低落、覺得不舒服或動作變慢等憂鬱症狀，與跌倒有關。' }
+];
+const fallQuickQuestions = [
+  { topic: 'history', label: '過去一年曾跌倒', text: '{who}過去一年內是否跌倒過？', why: '曾經跌倒過的人，再次跌倒的機會較高。' },
+  { topic: 'balance', label: '站立或行走時覺得不穩', text: '{who}站立或行走時，是否覺得不穩？', why: '站不穩或走不穩，是平衡變差的徵兆。' },
+  { topic: 'fear', label: '擔心跌倒', text: '{who}是否擔心自己會跌倒？', why: '擔心跌倒的人，跌倒的機會較高。' }
+];
+const fallArea = document.querySelector('#fallArea');
+const fallSetup = document.querySelector('#fallSetup');
+const fallQuiz = document.querySelector('#fallQuiz');
+const fallResult = document.querySelector('#fallResult');
+const fallFullButton = document.querySelector('#fallFullButton');
+const fallQuickButton = document.querySelector('#fallQuickButton');
+const fallProxy = document.querySelector('#fallProxy');
+const fallBeginButton = document.querySelector('#fallBeginButton');
+const fallPrevButton = document.querySelector('#fallPrevButton');
+const fallYesButton = document.querySelector('#fallYesButton');
+const fallNoButton = document.querySelector('#fallNoButton');
+let fallMode = 'full';
+let fallIndex = 0;
+let fallAnswers = [];
+const fallQuestions = () => fallMode === 'full' ? fallFullQuestions : fallQuickQuestions;
+function setFallMode(mode){
+  fallMode = mode;
+  fallAnswers = [];
+  fallFullButton.setAttribute('aria-pressed', String(mode === 'full'));
+  fallQuickButton.setAttribute('aria-pressed', String(mode === 'quick'));
+  document.querySelector('#fallModeHint').textContent = mode === 'full' ? '完整版依各題配分加總，也能看出哪些方面需要多留意。' : '快速版只問 3 個關鍵問題，不計分；任一題回答「是」，就建議進一步評估。';
+}
+function showFallSetup(){ fallIndex = 0; fallAnswers = []; fallQuiz.hidden = true; fallResult.hidden = true; fallSetup.hidden = false; fallSetup.scrollIntoView({ behavior: 'smooth', block: 'start' }); fallBeginButton.focus(); }
+function startFall(){ i18n.setTool('fall'); homePage.hidden = true; setFallMode('full'); fallProxy.checked = false; fallIndex = 0; fallQuiz.hidden = true; fallResult.hidden = true; fallSetup.hidden = false; fallArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; fallArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); fallFullButton.focus(); }
+function beginFall(){ fallIndex = 0; fallAnswers = []; fallSetup.hidden = true; fallResult.hidden = true; fallQuiz.hidden = false; renderFallQuestion(); fallQuiz.scrollIntoView({ behavior: 'smooth', block: 'start' }); fallYesButton.focus(); }
+function renderFallQuestion(){
+  const questions = fallQuestions();
+  const question = questions[fallIndex];
+  document.querySelector('#fallProgressText').textContent = `第 ${fallIndex + 1}／${questions.length} 題`;
+  document.querySelector('#fallModeLabel').textContent = fallMode === 'full' ? '完整版' : '快速版';
+  document.querySelector('#fallProgressBar').style.width = `${((fallIndex + 1) / questions.length) * 100}%`;
+  document.querySelector('#fallQuestion').textContent = question.text.replaceAll('{who}', fallProxy.checked ? '他／她' : '您');
+  document.querySelector('#fallWhy').textContent = question.why;
+  fallPrevButton.textContent = fallIndex === 0 ? '← 回到設定' : '← 上一題';
+  fallYesButton.setAttribute('aria-pressed', String(fallAnswers[fallIndex] === true));
+  fallNoButton.setAttribute('aria-pressed', String(fallAnswers[fallIndex] === false));
+}
+function answerFall(value){
+  fallAnswers[fallIndex] = value;
+  fallIndex += 1;
+  if(fallIndex < fallQuestions().length) renderFallQuestion(); else showFallResult();
+}
+function showFallResult(){
+  const isFull = fallMode === 'full';
+  const questions = fallQuestions();
+  const yesItems = questions.filter((question, index) => fallAnswers[index]);
+  const score = yesItems.reduce((sum, question) => sum + (question.points || 0), 0);
+  const hasFallen = fallAnswers[0] === true;
+  const atRisk = isFull ? score >= 4 || hasFallen : yesItems.length > 0;
+  const category = isFull ? (atRisk ? '跌倒風險較高' : '目前風險較低') : (atRisk ? '建議進一步評估' : '目前未發現明顯風險');
+  const summary = isFull
+    ? (score >= 4 ? '總分達 4 分以上，跌倒的風險可能較高。請帶著這份結果與醫師討論。' : hasFallen ? '雖然總分未達 4 分，但過去一年曾經跌倒，仍屬於跌倒風險較高。請帶著這份結果與醫師討論。' : '總分未達 4 分，目前跌倒的風險較低。仍建議維持運動與居家安全，每年再檢測一次；身體狀況改變時，也請重新檢測。')
+    : (atRisk ? '有任一題回答「是」，建議完成完整版 12 題，並與醫師討論跌倒風險。' : '3 個關鍵問題都回答「否」。仍建議維持運動與居家安全，每年再檢測一次。');
+  const labels = yesItems.map(question => question.label);
+  const advice = [...new Set(yesItems.map(question => fallAdvice[question.topic]))];
+  fallQuiz.hidden = true;
+  fallResult.className = `bmi-result fall-result ${atRisk ? 'level-high' : 'level-ok'}`;
+  fallResult.hidden = false;
+  fallResult.innerHTML = `${isFull ? `<p class="bmi-value">${score}<small>／14 分</small></p>` : ''}<span class="bmi-category">${category}</span><p>${summary}</p>${labels.length ? `<p><b>回答「是」的項目：</b>${labels.join('、')}</p>` : ''}${advice.length ? `<h4>針對這些回答</h4><ul>${advice.map(item => `<li>${item}</li>`).join('')}</ul>` : ''}<h4>平時可以這樣做</h4><ul>${fallGeneralAdvice.map(item => `<li>${item}</li>`).join('')}</ul><div class="fall-result-actions"><button class="primary-button" id="fallRestart" type="button">重新檢測</button>${!isFull && atRisk ? '<button class="primary-button" id="fallToFull" type="button">改做完整版 12 題</button>' : ''}</div>`;
+  fallResult.querySelector('#fallRestart').addEventListener('click', showFallSetup);
+  if(!isFull && atRisk) fallResult.querySelector('#fallToFull').addEventListener('click', () => { setFallMode('full'); beginFall(); });
+  addPngButton(fallResult, '跌倒風險自我檢測結果', [
+    ['檢測時間', i18n.formatDate(new Date())],
+    ['檢測方式', `${isFull ? '完整版 12 題' : '快速版 3 題'}・${fallProxy.checked ? '家屬或照顧者代填' : '本人填寫'}`],
+    ...(isFull ? [['總分', `${score}／14 分（4 分以上，或過去一年曾跌倒，屬於風險較高）`]] : []),
+    ['結果', category],
+    ['回答「是」的項目', labels.length ? labels.join('、') : '無'],
+    ['提醒', '本結果不是診斷，請帶著這張圖片與醫師或藥師討論。']
+  ], `跌倒風險自我檢測-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
+  fallResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+document.querySelector('#fallStartButton').addEventListener('click', startFall);
+fallFullButton.addEventListener('click', () => setFallMode('full'));
+fallQuickButton.addEventListener('click', () => setFallMode('quick'));
+fallBeginButton.addEventListener('click', beginFall);
+fallYesButton.addEventListener('click', () => answerFall(true));
+fallNoButton.addEventListener('click', () => answerFall(false));
+fallPrevButton.addEventListener('click', () => { if(fallIndex === 0) showFallSetup(); else { fallIndex -= 1; renderFallQuestion(); } });
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
 
 })();

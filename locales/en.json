@@ -304,7 +304,12 @@
     "legacy.d181bea82e59": "Learn more",
     "legacy.b1f1db052906": "Fixed: Simplified Chinese and English are temporarily unavailable and marked as coming soon",
     "legacy.2fe2bf81fe39": "Added: Preventive care (BMI calculator)",
-    "legacy.cf4d067097b0": "Added: Fasting blood glucose and HbA1c reference ranges"
+    "legacy.cf4d067097b0": "Added: Fasting blood glucose and HbA1c reference ranges",
+    "legacy.cf35fd74c7f8": "Fall prevention",
+    "legacy.5d33beb4bccc": "Fall risk self-check",
+    "legacy.704514753d2e": "For adults 65 and older, or filled in with a family member.",
+    "legacy.a9dae23d5289": "Start check",
+    "legacy.9e77fdb675a0": "Added: Fall risk self-check"
   },
   "legacyKeys": {
     "2026-10-29": "legacy.5ef2d8c8a905",
@@ -608,6 +613,11 @@
     "開始了解": "legacy.d181bea82e59",
     "修正：簡體中文及英文選項暫時關閉，標示為準備中": "legacy.b1f1db052906",
     "新增：預防保健（BMI 計算）": "legacy.2fe2bf81fe39",
-    "新增：飯前血糖及糖化血色素參考值": "legacy.cf4d067097b0"
+    "新增：飯前血糖及糖化血色素參考值": "legacy.cf4d067097b0",
+    "長者防跌": "legacy.cf35fd74c7f8",
+    "跌倒風險自我檢測": "legacy.5d33beb4bccc",
+    "適用 65 歲以上長者，或由家屬陪同代填。": "legacy.704514753d2e",
+    "開始檢測": "legacy.a9dae23d5289",
+    "新增：跌倒風險自我檢測": "legacy.9e77fdb675a0"
   }
 }

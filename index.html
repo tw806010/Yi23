@@ -9,7 +9,7 @@
     <link rel="icon" href="icon.png" />
     <link rel="apple-touch-icon" href="icon.png" />
     <title>醫二三｜緊急工具包</title>
-    <link rel="stylesheet" href="style.css?v=11" />
+    <link rel="stylesheet" href="style.css?v=12" />
     <style>
       .hero-art { display: grid; place-items: center; }
       .cover-image { display: block; width: min(100%, 360px); border: 8px solid rgba(255,255,255,.75); border-radius: 32px; box-shadow: 0 17px 32px rgba(35,105,137,.2); transform: rotate(2deg); }
@@ -46,6 +46,8 @@
       .reference-table { display: grid; gap: 8px; margin: 16px 0 4px; }.reference-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; padding: 12px 15px; border: 1px solid #dce8ec; border-left: 6px solid var(--bmi-color); border-radius: 13px; background: #fff; transition: .15s; }.reference-row b { color: var(--bmi-color); font-size: 17px; }.reference-row span { color: #526b7d; font-size: 14px; line-height: 1.55; }.reference-row.is-match { background: #fffbea; box-shadow: 0 0 0 2px var(--bmi-color); }
       @media (max-width: 500px) { .reference-row { grid-template-columns: 1fr; gap: 3px; } }
       @media (max-width: 500px) { .bmi-form { grid-template-columns: 1fr; }.bmi-result { padding: 18px; }.bmi-value { font-size: 34px; } }
+      .fall-header { border-color: #cce9de; background: linear-gradient(135deg, #edfbf4, #fffdf8); }.fall-mode { display: flex; gap: 11px; margin: 6px 0 4px; }.fall-mode .choice, .fall-answer .choice { min-height: 52px; }.fall-mode .choice[aria-pressed="true"], .fall-answer .choice[aria-pressed="true"] { border-color: #2f9e76; background: #edfbf4; color: #1f7357; }.fall-proxy { display: flex; align-items: center; gap: 10px; min-height: 48px; margin-top: 8px; padding: 10px 13px; border-radius: 12px; background: #f4fafb; color: #38566c; font-weight: 800; line-height: 1.5; cursor: pointer; }.fall-proxy input { flex: 0 0 auto; width: 22px; height: 22px; accent-color: #2f9e76; }.fall-start { display: block; width: min(100%, 330px); margin-top: 20px; background: #2f9e76; box-shadow: 0 5px 0 #237457; }
+      .ems-detail .fall-question { margin: 6px 0 8px; font-size: clamp(22px, 5vw, 27px); line-height: 1.45; }.ems-detail .fall-why { margin: 0 0 18px; color: #6b8190; font-size: 15px; }.fall-answer.choice-buttons { flex-direction: row; }.fall-answer .choice { font-size: 20px; }.fall-result p { margin: 10px 0 0; color: #526b7d; line-height: 1.7; }.fall-result h4 { margin: 20px 0 0; color: #294b63; font-size: 17px; }.fall-result a { color: #287da9; font-weight: 800; }.fall-result-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }.fall-result-actions .primary-button { padding: 13px 18px; font-size: 16px; }.fall-result .png-save-button { margin: 17px 0 4px; }.fall-area .ems-back-button { min-height: 44px; }
       @media (max-width: 800px) { .ems-menu-grid, .ems-info-grid { grid-template-columns: 1fr; }.ems-menu-card { min-height: 0; }.ems-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (max-width: 500px) { .ems-header { padding: 23px 19px; }.ems-detail { padding: 18px; }.ems-alert { flex-wrap: wrap; }.ems-alert a { margin-left: 0; }.ems-flow { grid-template-columns: 1fr; } }
       @media (max-width: 800px) { .tool-grid { grid-template-columns: 1fr; }.home-card { min-height: 190px; }.emergency-note { align-items: flex-start; }.emergency-note a { display: none; } }
@@ -104,6 +106,9 @@
         <div class="tool-grid care-grid">
           <article class="home-card future-card">
             <div class="card-icon gold-icon">♥</div><div><span class="card-tag">健康管理</span><h3>預防保健</h3><p>計算 BMI，並認識飯前血糖與糖化血色素參考值。</p></div><button class="card-link" id="preventionStartButton" type="button">開始了解 <span>→</span></button>
+          </article>
+          <article class="home-card future-card">
+            <div class="card-icon mint-icon">⚑</div><div><span class="card-tag">長者防跌</span><h3>跌倒風險自我檢測</h3><p>適用 65 歲以上長者，或由家屬陪同代填。</p></div><button class="card-link" id="fallStartButton" type="button">開始檢測 <span>→</span></button>
           </article>
         </div>
       </section>
@@ -224,6 +229,35 @@
         </article>
       </section>
 
+      <section class="ems-area fall-area" id="fallArea" hidden aria-labelledby="fallTitle" data-no-translate>
+        <header class="ems-header fall-header">
+          <p class="eyebrow">日常保健</p>
+          <h2 id="fallTitle">跌倒風險自我檢測</h2>
+          <p>依美國 CDC「STEADI」長者跌倒風險自我檢測設計，每題回答「是」或「否」即可。適用 65 歲以上長者，也可以由家屬或照顧者陪同代填。結果只能提醒風險，不能取代醫療人員的評估。</p>
+        </header>
+        <article class="ems-detail" id="fallSetup" aria-labelledby="fallSetupTitle">
+          <h3 id="fallSetupTitle">選擇檢測方式</h3>
+          <div class="fall-mode" role="group" aria-label="檢測版本">
+            <button class="choice" id="fallFullButton" type="button" aria-pressed="true">完整版 12 題</button>
+            <button class="choice" id="fallQuickButton" type="button" aria-pressed="false">快速版 3 題</button>
+          </div>
+          <p id="fallModeHint">完整版依各題配分加總，也能看出哪些方面需要多留意。</p>
+          <label class="fall-proxy"><input id="fallProxy" type="checkbox" />代填模式：由家屬或照顧者代為填寫</label>
+          <button class="primary-button fall-start" id="fallBeginButton" type="button">開始檢測 <span>→</span></button>
+        </article>
+        <article class="ems-detail" id="fallQuiz" hidden aria-labelledby="fallQuestion">
+          <button class="ems-back-button" id="fallPrevButton" type="button">← 上一題</button>
+          <div class="progress-wrap"><div class="progress-meta"><span id="fallProgressText">第 1／12 題</span><span id="fallModeLabel">完整版</span></div><div class="progress-track"><i id="fallProgressBar"></i></div></div>
+          <h3 class="fall-question" id="fallQuestion" aria-live="polite"></h3>
+          <p class="fall-why" id="fallWhy"></p>
+          <div class="choice-buttons fall-answer"><button class="choice" id="fallYesButton" type="button" aria-pressed="false">是</button><button class="choice" id="fallNoButton" type="button" aria-pressed="false">否</button></div>
+        </article>
+        <section class="bmi-result fall-result" id="fallResult" hidden aria-live="polite"></section>
+        <aside class="ems-alert"><div><strong>已經跌倒時</strong><br />若已經跌倒，且出現撞到頭、意識改變、無法自行起身、疑似骨折，或服用抗凝血劑者撞到頭，請立即撥打 119。</div><a href="tel:119">撥打 119</a></aside>
+        <div class="ems-note">本檢測只需回答問題，不需要做任何動作測試。您的回答只在您的裝置上計算，不會上傳。</div>
+        <p class="ems-source">內容參考：<a href="https://www.cdc.gov/steadi/pdf/STEADI-Brochure-StayIndependent-508.pdf" target="_blank" rel="noopener noreferrer">美國 CDC・STEADI Stay Independent 小冊子（Check Your Risk for Falling）</a>，題目依 CDC 原文自行翻譯；量表出自 Rubenstein 等人（J Safety Res, 2011;42(6):493-499）。快速版與「曾跌倒即視為風險較高」依 STEADI 三個關鍵問題。<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4625&amp;pid=19774" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・「防跌三步」守護長者安全</a>、<a href="https://www.hpa.gov.tw/Pages/List.aspx?nodeid=4624" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・長者防跌專區</a>。</p>
+      </section>
+
       <section class="ems-area" id="emsArea" hidden aria-labelledby="emsTitle" data-no-translate>
         <div id="emsHub">
           <header class="ems-header">
@@ -320,7 +354,7 @@
         <h2 id="versionTitle">版本記錄</h2>
         <p>醫二三的功能更新與上架紀錄。</p>
         <div class="version-list">
-          <section class="version-day"><h3>2026-11-04</h3><ul><li>修正：簡體中文及英文選項暫時關閉，標示為準備中</li><li>新增：預防保健（BMI 計算）</li><li>新增：飯前血糖及糖化血色素參考值</li></ul></section>
+          <section class="version-day"><h3>2026-11-04</h3><ul><li>修正：簡體中文及英文選項暫時關閉，標示為準備中</li><li>新增：預防保健（BMI 計算）</li><li>新增：飯前血糖及糖化血色素參考值</li><li>新增：跌倒風險自我檢測</li></ul></section>
           <section class="version-day"><h3>2026-11-03</h3><ul><li>新增：認識緊急醫療救護服務系統（EMS）</li><li>新增：使用須知與隱私說明</li><li>修正：免責聲明與著作權聲明</li></ul></section>
           <section class="version-day"><h3>2026-11-01</h3><ul><li>新增：簡體中文版本</li><li>新增：英語版本</li></ul></section>
           <section class="version-day"><h3>2026-10-30</h3><ul><li>新增：贊助連結</li><li>新增：版本記錄頁面</li><li>修正：版本記錄頁捲動</li><li>修正：整合各年齡層生命徵象參考值</li><li>新增：儲存結果圖片按鈕</li></ul></section>
@@ -355,7 +389,7 @@
         <p>引用的參考資料著作權歸原權利人所有。授權申請請透過「關於作者」頁的回報問題表單聯繫。</p>
       </div>
     </footer>
-    <script src="i18n.js?v=11"></script>
-    <script src="app.js?v=11"></script>
+    <script src="i18n.js?v=12"></script>
+    <script src="app.js?v=12"></script>
   </body>
 </html>
