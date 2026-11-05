@@ -217,7 +217,7 @@
   }
   function applyLocale() {
     document.documentElement.lang = activeLocale;
-    document.title = t('醫二三｜緊急工具包');
+    document.title = t('醫二三｜緊急工具包：中風檢查、生命徵象與日常保健');
     translateElement(document.body);
     if (localeSelect) {
       localeSelect.value = activeLocale;
