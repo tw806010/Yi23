@@ -316,7 +316,17 @@
     "legacy.74ec31536f45": "急症科普",
     "legacy.8efab418e498": "認識冠心症與腦中風的警訊，以及等救護車時可以做什麼。",
     "legacy.b82e75c096ca": "開始閱讀",
-    "legacy.e36dc2e3a892": "新增：認識急症（冠心症、腦中風）"
+    "legacy.e36dc2e3a892": "新增：認識急症（冠心症、腦中風）",
+    "legacy.d02b3d6b2655": "選單",
+    "legacy.de961bb8936f": "關閉選單",
+    "legacy.f1e43c0b96f4": "緊急工具",
+    "legacy.dc67f237de1f": "昏迷指數評估",
+    "legacy.b28070b8f943": "BMI 計算",
+    "legacy.39afe8dfed8a": "對照飯前血糖",
+    "legacy.bd2a3bda6f98": "對照糖化血色素",
+    "legacy.bfdb4db55ba4": "認識冠心症",
+    "legacy.9038284a1c81": "認識腦中風",
+    "legacy.411aa3a8887c": "新增：左上角選單"
   },
   "legacyKeys": {
     "2026-10-29": "legacy.5ef2d8c8a905",
@@ -632,6 +642,16 @@
     "急症科普": "legacy.74ec31536f45",
     "認識冠心症與腦中風的警訊，以及等救護車時可以做什麼。": "legacy.8efab418e498",
     "開始閱讀": "legacy.b82e75c096ca",
-    "新增：認識急症（冠心症、腦中風）": "legacy.e36dc2e3a892"
+    "新增：認識急症（冠心症、腦中風）": "legacy.e36dc2e3a892",
+    "選單": "legacy.d02b3d6b2655",
+    "關閉選單": "legacy.de961bb8936f",
+    "緊急工具": "legacy.f1e43c0b96f4",
+    "昏迷指數評估": "legacy.dc67f237de1f",
+    "BMI 計算": "legacy.b28070b8f943",
+    "對照飯前血糖": "legacy.39afe8dfed8a",
+    "對照糖化血色素": "legacy.bd2a3bda6f98",
+    "認識冠心症": "legacy.bfdb4db55ba4",
+    "認識腦中風": "legacy.9038284a1c81",
+    "新增：左上角選單": "legacy.411aa3a8887c"
   }
 }

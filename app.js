@@ -186,7 +186,8 @@ function showResult(isEmergency){
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startCheck(){ i18n.setTool('stroke'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); document.querySelector('#fallArea').hidden = true; closeAcute(); homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function resetAllAreas(){ current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); document.querySelector('#fallArea').hidden = true; closeAcute(); restartButton.hidden = true; }
+function returnHome(){ i18n.setTool('home'); resetAllAreas(); homePage.hidden = false; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function startTriage(){ i18n.setTool('triage'); homePage.hidden = true; vitalsArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startVitals(){ i18n.setTool('vitals'); homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; vitalsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; vitalsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startEms(){ i18n.setTool('ems'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; emsPages.forEach(page => { page.hidden = true; }); emsHub.hidden = false; emsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; emsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelector('#emsOverviewButton').focus(); }
@@ -212,7 +213,8 @@ function showAcutePage(page, opener){ previousAcuteButton = opener; acuteHub.hid
 function showAcuteHub(){ acutePages.forEach(page => { page.hidden = true; }); acuteHub.hidden = false; acuteArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); previousAcuteButton?.focus(); }
 function closeAcute(){ acuteArea.hidden = true; acuteHub.hidden = false; acutePages.forEach(page => { page.hidden = true; }); }
 // Links from the education pages jump straight into the related tool.
-function openPreventionFromAcute(index, opener){ closeAcute(); startPrevention(); showPreventionPage(preventionPages[index], document.querySelector(opener)); }
+function openPreventionPage(index, opener){ startPrevention(); showPreventionPage(preventionPages[index], document.querySelector(opener)); }
+function openPreventionFromAcute(index, opener){ closeAcute(); openPreventionPage(index, opener); }
 document.querySelector('#acuteStartButton').addEventListener('click', startAcute);
 document.querySelector('#cadButton').addEventListener('click', event => showAcutePage(acutePages[0], event.currentTarget));
 document.querySelector('#strokeInfoButton').addEventListener('click', event => showAcutePage(acutePages[1], event.currentTarget));
@@ -237,7 +239,7 @@ termsButton.addEventListener('click', () => openTerms(termsButton));
 bioTermsButton.addEventListener('click', () => openTerms(bioButton));
 termsCloseButton.addEventListener('click', closeTerms);
 termsPage.addEventListener('click', event => { if(event.target === termsPage) closeTerms(); });
-document.addEventListener('keydown', event => { if(event.key !== 'Escape') return; if(!termsPage.hidden) closeTerms(); else if(!bioPage.hidden) { bioPage.hidden = true; bioButton.focus(); } else if(!versionPage.hidden) { versionPage.hidden = true; versionButton.focus(); } });
+document.addEventListener('keydown', event => { if(event.key !== 'Escape') return; if(!siteMenu.hidden) closeMenu(); else if(!termsPage.hidden) closeTerms(); else if(!bioPage.hidden) { bioPage.hidden = true; bioButton.focus(); } else if(!versionPage.hidden) { versionPage.hidden = true; versionButton.focus(); } });
 
 const gcsSteps = [
   { key: 'E', label: '睜眼反應', title: '觀察對方是否睜開眼睛。', instruction: '先觀察是否自然睜眼；若沒有，可用平常音量呼喚。無法判斷或有眼部因素時，請選擇「無法評估」。', choices: [[4, '自然睜開眼睛'], [3, '聽到呼喚後睜眼'], [2, '對壓力刺激有反應（限受過訓練者）'], [1, '沒有睜眼反應'], ['NT', '無法評估，例如眼部受傷或腫脹']] },
@@ -575,6 +577,38 @@ fallBeginButton.addEventListener('click', beginFall);
 fallYesButton.addEventListener('click', () => answerFall(true));
 fallNoButton.addEventListener('click', () => answerFall(false));
 fallPrevButton.addEventListener('click', () => { if(fallIndex === 0) showFallSetup(); else { fallIndex -= 1; renderFallQuestion(); } });
+const menuButton = document.querySelector('#menuButton');
+const siteMenu = document.querySelector('#siteMenu');
+const siteMenuBackdrop = document.querySelector('#siteMenuBackdrop');
+const menuGroups = ['Emergency', 'Care', 'Acute'].map(name => [document.querySelector(`#menuGroup${name}`), document.querySelector(`#menuList${name}`)]);
+function setMenuGroup(opener){ menuGroups.forEach(([button, list]) => { const open = button === opener && button.getAttribute('aria-expanded') !== 'true'; button.setAttribute('aria-expanded', String(open)); list.hidden = !open; }); }
+function openMenu(){ setMenuGroup(null); siteMenu.hidden = false; siteMenuBackdrop.hidden = false; menuButton.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; menuGroups[0][0].focus(); }
+function closeMenu(){ siteMenu.hidden = true; siteMenuBackdrop.hidden = true; menuButton.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; menuButton.focus(); }
+const menuActions = {
+  menuStroke: startCheck,
+  menuGcs: startGcs,
+  menuBmi: () => openPreventionPage(0, '#bmiButton'),
+  menuGlucose: () => openPreventionPage(1, '#glucoseButton'),
+  menuHba1c: () => openPreventionPage(2, '#hba1cButton'),
+  menuFall: startFall,
+  menuCad: () => { startAcute(); showAcutePage(acutePages[0], document.querySelector('#cadButton')); },
+  menuStrokeInfo: () => { startAcute(); showAcutePage(acutePages[1], document.querySelector('#strokeInfoButton')); },
+  menuVitals: startVitals,
+  menuTriage: startTriage,
+  menuEms: startEms
+};
+menuButton.addEventListener('click', () => { if(siteMenu.hidden) openMenu(); else closeMenu(); });
+document.querySelector('#siteMenuClose').addEventListener('click', closeMenu);
+siteMenuBackdrop.addEventListener('click', closeMenu);
+menuGroups.forEach(([button]) => button.addEventListener('click', () => setMenuGroup(button)));
+Object.entries(menuActions).forEach(([id, action]) => document.querySelector(`#${id}`).addEventListener('click', () => { closeMenu(); resetAllAreas(); action(); }));
+siteMenu.addEventListener('keydown', event => {
+  if(event.key !== 'Tab') return;
+  const focusable = [...siteMenu.querySelectorAll('button')].filter(button => button.offsetParent !== null);
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if(event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if(!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
 if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
 
 })();

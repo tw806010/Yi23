@@ -33,7 +33,7 @@
         "description": "給一般民眾的免費健康工具包：中風快速檢查、GCS 昏迷指數、生命徵象紀錄、急診檢傷分級，以及 BMI、血糖與長者跌倒風險自我檢測。不取代醫療專業判斷。"
       }
     </script>
-    <link rel="stylesheet" href="style.css?v=14" />
+    <link rel="stylesheet" href="style.css?v=15" />
     <style>
       .hero-art { display: grid; place-items: center; }
       .cover-image { display: block; width: min(100%, 360px); border: 8px solid rgba(255,255,255,.75); border-radius: 32px; box-shadow: 0 17px 32px rgba(35,105,137,.2); transform: rotate(2deg); }
@@ -73,6 +73,10 @@
       .fall-header { border-color: #cce9de; background: linear-gradient(135deg, #edfbf4, #fffdf8); }.fall-mode { display: flex; gap: 11px; margin: 6px 0 4px; }.fall-mode .choice, .fall-answer .choice { min-height: 52px; }.fall-mode .choice[aria-pressed="true"], .fall-answer .choice[aria-pressed="true"] { border-color: #2f9e76; background: #edfbf4; color: #1f7357; }.fall-proxy { display: flex; align-items: center; gap: 10px; min-height: 48px; margin-top: 8px; padding: 10px 13px; border-radius: 12px; background: #f4fafb; color: #38566c; font-weight: 800; line-height: 1.5; cursor: pointer; }.fall-proxy input { flex: 0 0 auto; width: 22px; height: 22px; accent-color: #2f9e76; }.fall-start { display: block; width: min(100%, 330px); margin-top: 20px; background: #2f9e76; box-shadow: 0 5px 0 #237457; }
       .ems-detail .fall-question { margin: 6px 0 8px; font-size: clamp(22px, 5vw, 27px); line-height: 1.45; }.ems-detail .fall-why { margin: 0 0 18px; color: #6b8190; font-size: 15px; }.fall-answer.choice-buttons { flex-direction: row; }.fall-answer .choice { font-size: 20px; }.fall-result p { margin: 10px 0 0; color: #526b7d; line-height: 1.7; }.fall-result h4 { margin: 20px 0 0; color: #294b63; font-size: 17px; }.fall-result a { color: #287da9; font-weight: 800; }.fall-result-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }.fall-result-actions .primary-button { padding: 13px 18px; font-size: 16px; }.fall-result .png-save-button { margin: 17px 0 4px; }.fall-area .ems-back-button { min-height: 44px; }
       .acute-header { border-color: #f6d7bf; background: linear-gradient(135deg, #fff2ec, #fffdf8); }.acute-page > h4 { margin: 24px 0 6px; color: #294b63; font-size: 18px; }.acute-page > p { margin: 8px 0 0; }.acute-page .ems-info-grid { margin: 12px 0; }.acute-page .ems-info-grid.acute-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }.acute-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }.acute-actions .primary-button { padding: 13px 18px; font-size: 16px; }.acute-area .ems-back-button { min-height: 44px; }@media (max-width: 500px) { .acute-page .ems-info-grid.acute-two { grid-template-columns: 1fr; } }
+      .menu-button { display: grid; flex: none; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); cursor: pointer; }.menu-button:hover { border-color: #f0b6a6; }.menu-button span, .menu-button span::before, .menu-button span::after { display: block; width: 20px; height: 2.5px; border-radius: 2px; background: currentColor; }.menu-button span { position: relative; }.menu-button span::before, .menu-button span::after { position: absolute; left: 0; content: ""; }.menu-button span::before { top: -7px; }.menu-button span::after { top: 7px; }
+      .site-menu-backdrop { position: fixed; z-index: 29; inset: 0; background: rgba(23,51,82,.45); animation: menu-fade .2s ease; }.site-menu { position: fixed; z-index: 30; top: 0; bottom: 0; left: 0; display: flex; flex-direction: column; width: min(85vw, 320px); padding: 18px 14px 24px; overflow-y: auto; overscroll-behavior: contain; background: var(--paper); box-shadow: 8px 0 30px rgba(23,51,82,.2); animation: menu-slide .22s ease; }.site-menu-head { display: flex; align-items: center; justify-content: space-between; margin: 0 4px 12px; }.site-menu-head h2 { margin: 0; color: var(--ink); font-size: 21px; }.site-menu-close { width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; color: #526c80; font: inherit; font-size: 20px; cursor: pointer; }.site-menu-close:hover { background: #fff2ec; color: #d54a43; }.site-menu-list, .site-menu-sub { margin: 0; padding: 0; list-style: none; }.site-menu-list > li + li { border-top: 1px solid var(--line); }.site-menu-group, .site-menu-item { display: flex; align-items: center; width: 100%; min-height: 48px; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-size: 17px; font-weight: 800; text-align: left; cursor: pointer; }.site-menu-group::after { width: 8px; height: 8px; margin-left: auto; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor; content: ""; transform: translateY(-2px) rotate(45deg); transition: transform .2s; }.site-menu-group[aria-expanded="true"] { color: #d54a43; }.site-menu-group[aria-expanded="true"]::after { transform: translateY(2px) rotate(-135deg); }.site-menu-group:hover, .site-menu-item:hover { background: #fff2ec; }.site-menu-sub { padding: 0 0 8px 14px; }.site-menu-sub .site-menu-item { min-height: 44px; color: #3c5a70; font-size: 16px; font-weight: 700; }
+      @media (max-width: 500px) { .topbar { flex-wrap: wrap; gap: 8px; }.topbar .brand, .topbar .bio-button { white-space: nowrap; }.topbar .language-select { margin-left: auto; } }
+      .site-menu[hidden], .site-menu-backdrop[hidden] { display: none; }@keyframes menu-slide { from { transform: translateX(-100%); } }@keyframes menu-fade { from { opacity: 0; } }@media (prefers-reduced-motion: reduce) { .site-menu, .site-menu-backdrop { animation: none; }.site-menu-group::after { transition: none; } }
       @media (max-width: 800px) { .ems-menu-grid, .ems-info-grid { grid-template-columns: 1fr; }.ems-menu-card { min-height: 0; }.ems-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (max-width: 500px) { .ems-header { padding: 23px 19px; }.ems-detail { padding: 18px; }.ems-alert { flex-wrap: wrap; }.ems-alert a { margin-left: 0; }.ems-flow { grid-template-columns: 1fr; } }
       @media (max-width: 800px) { .tool-grid { grid-template-columns: 1fr; }.home-card { min-height: 190px; }.emergency-note { align-items: flex-start; }.emergency-note a { display: none; } }
@@ -83,6 +87,7 @@
   <body>
     <main class="app-shell">
       <header class="topbar">
+        <button class="menu-button" id="menuButton" type="button" aria-label="選單" aria-expanded="false" aria-controls="siteMenu"><span aria-hidden="true"></span></button>
         <a class="brand" id="homeBrand" href="#top" aria-label="醫二三首頁"><span class="brand-mark">＋</span><span>醫二三</span></a>
         <span class="tool-label">醫療工具包</span>
         <button class="bio-button version-button" id="versionButton" type="button">版本記錄</button>
@@ -91,6 +96,21 @@
         <button class="quiet-button" id="homeButton" type="button" hidden>返回首頁</button>
         <button class="quiet-button" id="restartButton" type="button" hidden>重新檢查</button>
       </header>
+      <div class="site-menu-backdrop" id="siteMenuBackdrop" hidden></div>
+      <nav class="site-menu" id="siteMenu" aria-labelledby="siteMenuTitle" hidden>
+        <div class="site-menu-head"><h2 id="siteMenuTitle">選單</h2><button class="site-menu-close" id="siteMenuClose" type="button" aria-label="關閉選單">✕</button></div>
+        <ul class="site-menu-list">
+          <li><button class="site-menu-group" id="menuGroupEmergency" type="button" aria-expanded="false" aria-controls="menuListEmergency">緊急工具</button>
+            <ul class="site-menu-sub" id="menuListEmergency" hidden><li><button class="site-menu-item" id="menuStroke" type="button">中風快速檢查</button></li><li><button class="site-menu-item" id="menuGcs" type="button">昏迷指數評估</button></li></ul></li>
+          <li><button class="site-menu-group" id="menuGroupCare" type="button" aria-expanded="false" aria-controls="menuListCare">日常保健</button>
+            <ul class="site-menu-sub" id="menuListCare" hidden><li><button class="site-menu-item" id="menuBmi" type="button">BMI 計算</button></li><li><button class="site-menu-item" id="menuGlucose" type="button">對照飯前血糖</button></li><li><button class="site-menu-item" id="menuHba1c" type="button">對照糖化血色素</button></li><li><button class="site-menu-item" id="menuFall" type="button">跌倒風險自我檢測</button></li></ul></li>
+          <li><button class="site-menu-group" id="menuGroupAcute" type="button" aria-expanded="false" aria-controls="menuListAcute">認識急症</button>
+            <ul class="site-menu-sub" id="menuListAcute" hidden><li><button class="site-menu-item" id="menuCad" type="button">認識冠心症</button></li><li><button class="site-menu-item" id="menuStrokeInfo" type="button">認識腦中風</button></li></ul></li>
+          <li><button class="site-menu-item site-menu-top" id="menuVitals" type="button">測量生命徵象</button></li>
+          <li><button class="site-menu-item site-menu-top" id="menuTriage" type="button">急診檢傷分類</button></li>
+          <li><button class="site-menu-item site-menu-top" id="menuEms" type="button">認識 EMS</button></li>
+        </ul>
+      </nav>
       <p class="language-notice" id="languageNotice" hidden aria-live="polite"></p>
 
       <div id="homePage">
@@ -471,7 +491,7 @@
         <h2 id="versionTitle">版本記錄</h2>
         <p>醫二三的功能更新與上架紀錄。</p>
         <div class="version-list">
-          <section class="version-day"><h3>2026-11-06</h3><ul><li>新增：跌倒風險自我檢測</li><li>新增：認識急症（冠心症、腦中風）</li></ul></section>
+          <section class="version-day"><h3>2026-11-06</h3><ul><li>新增：跌倒風險自我檢測</li><li>新增：認識急症（冠心症、腦中風）</li><li>新增：左上角選單</li></ul></section>
           <section class="version-day"><h3>2026-11-04</h3><ul><li>修正：簡體中文及英文選項暫時關閉，標示為準備中</li><li>新增：預防保健（BMI 計算）</li><li>新增：飯前血糖及糖化血色素參考值</li></ul></section>
           <section class="version-day"><h3>2026-11-03</h3><ul><li>新增：認識緊急醫療救護服務系統（EMS）</li><li>新增：使用須知與隱私說明</li><li>修正：免責聲明與著作權聲明</li></ul></section>
           <section class="version-day"><h3>2026-11-01</h3><ul><li>新增：簡體中文版本</li><li>新增：英語版本</li></ul></section>
@@ -507,7 +527,7 @@
         <p>引用的參考資料著作權歸原權利人所有。授權申請請透過「關於作者」頁的回報問題表單聯繫。</p>
       </div>
     </footer>
-    <script src="i18n.js?v=14"></script>
-    <script src="app.js?v=14"></script>
+    <script src="i18n.js?v=15"></script>
+    <script src="app.js?v=15"></script>
   </body>
 </html>
