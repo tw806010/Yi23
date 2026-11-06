@@ -310,7 +310,13 @@
     "legacy.704514753d2e": "For adults 65 and older, or filled in with a family member.",
     "legacy.a9dae23d5289": "Start check",
     "legacy.9e77fdb675a0": "Added: Fall risk self-check",
-    "legacy.2a4c59b8bd5a": "Yi23 | Emergency Toolkit: stroke check, vital signs and everyday health"
+    "legacy.2a4c59b8bd5a": "Yi23 | Emergency Toolkit: stroke check, vital signs and everyday health",
+    "legacy.c39b8812426c": "Know the emergencies",
+    "legacy.9f4fb6c80355": "Spot the warning signs early.",
+    "legacy.74ec31536f45": "Health education",
+    "legacy.8efab418e498": "Learn the warning signs of coronary heart disease and stroke, and what to do while waiting for the ambulance.",
+    "legacy.b82e75c096ca": "Start reading",
+    "legacy.e36dc2e3a892": "Added: Know the emergencies (coronary heart disease, stroke)"
   },
   "legacyKeys": {
     "2026-10-29": "legacy.5ef2d8c8a905",
@@ -620,6 +626,12 @@
     "適用 65 歲以上長者，或由家屬陪同代填。": "legacy.704514753d2e",
     "開始檢測": "legacy.a9dae23d5289",
     "新增：跌倒風險自我檢測": "legacy.9e77fdb675a0",
-    "醫二三｜緊急工具包：中風檢查、生命徵象與日常保健": "legacy.2a4c59b8bd5a"
+    "醫二三｜緊急工具包：中風檢查、生命徵象與日常保健": "legacy.2a4c59b8bd5a",
+    "認識急症": "legacy.c39b8812426c",
+    "及早認出警訊。": "legacy.9f4fb6c80355",
+    "急症科普": "legacy.74ec31536f45",
+    "認識冠心症與腦中風的警訊，以及等救護車時可以做什麼。": "legacy.8efab418e498",
+    "開始閱讀": "legacy.b82e75c096ca",
+    "新增：認識急症（冠心症、腦中風）": "legacy.e36dc2e3a892"
   }
 }

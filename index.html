@@ -33,7 +33,7 @@
         "description": "給一般民眾的免費健康工具包：中風快速檢查、GCS 昏迷指數、生命徵象紀錄、急診檢傷分級，以及 BMI、血糖與長者跌倒風險自我檢測。不取代醫療專業判斷。"
       }
     </script>
-    <link rel="stylesheet" href="style.css?v=13" />
+    <link rel="stylesheet" href="style.css?v=14" />
     <style>
       .hero-art { display: grid; place-items: center; }
       .cover-image { display: block; width: min(100%, 360px); border: 8px solid rgba(255,255,255,.75); border-radius: 32px; box-shadow: 0 17px 32px rgba(35,105,137,.2); transform: rotate(2deg); }
@@ -72,6 +72,7 @@
       @media (max-width: 500px) { .bmi-form { grid-template-columns: 1fr; }.bmi-result { padding: 18px; }.bmi-value { font-size: 34px; } }
       .fall-header { border-color: #cce9de; background: linear-gradient(135deg, #edfbf4, #fffdf8); }.fall-mode { display: flex; gap: 11px; margin: 6px 0 4px; }.fall-mode .choice, .fall-answer .choice { min-height: 52px; }.fall-mode .choice[aria-pressed="true"], .fall-answer .choice[aria-pressed="true"] { border-color: #2f9e76; background: #edfbf4; color: #1f7357; }.fall-proxy { display: flex; align-items: center; gap: 10px; min-height: 48px; margin-top: 8px; padding: 10px 13px; border-radius: 12px; background: #f4fafb; color: #38566c; font-weight: 800; line-height: 1.5; cursor: pointer; }.fall-proxy input { flex: 0 0 auto; width: 22px; height: 22px; accent-color: #2f9e76; }.fall-start { display: block; width: min(100%, 330px); margin-top: 20px; background: #2f9e76; box-shadow: 0 5px 0 #237457; }
       .ems-detail .fall-question { margin: 6px 0 8px; font-size: clamp(22px, 5vw, 27px); line-height: 1.45; }.ems-detail .fall-why { margin: 0 0 18px; color: #6b8190; font-size: 15px; }.fall-answer.choice-buttons { flex-direction: row; }.fall-answer .choice { font-size: 20px; }.fall-result p { margin: 10px 0 0; color: #526b7d; line-height: 1.7; }.fall-result h4 { margin: 20px 0 0; color: #294b63; font-size: 17px; }.fall-result a { color: #287da9; font-weight: 800; }.fall-result-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }.fall-result-actions .primary-button { padding: 13px 18px; font-size: 16px; }.fall-result .png-save-button { margin: 17px 0 4px; }.fall-area .ems-back-button { min-height: 44px; }
+      .acute-header { border-color: #f6d7bf; background: linear-gradient(135deg, #fff2ec, #fffdf8); }.acute-page > h4 { margin: 24px 0 6px; color: #294b63; font-size: 18px; }.acute-page > p { margin: 8px 0 0; }.acute-page .ems-info-grid { margin: 12px 0; }.acute-page .ems-info-grid.acute-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }.acute-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }.acute-actions .primary-button { padding: 13px 18px; font-size: 16px; }.acute-area .ems-back-button { min-height: 44px; }@media (max-width: 500px) { .acute-page .ems-info-grid.acute-two { grid-template-columns: 1fr; } }
       @media (max-width: 800px) { .ems-menu-grid, .ems-info-grid { grid-template-columns: 1fr; }.ems-menu-card { min-height: 0; }.ems-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
       @media (max-width: 500px) { .ems-header { padding: 23px 19px; }.ems-detail { padding: 18px; }.ems-alert { flex-wrap: wrap; }.ems-alert a { margin-left: 0; }.ems-flow { grid-template-columns: 1fr; } }
       @media (max-width: 800px) { .tool-grid { grid-template-columns: 1fr; }.home-card { min-height: 190px; }.emergency-note { align-items: flex-start; }.emergency-note a { display: none; } }
@@ -133,6 +134,15 @@
           </article>
           <article class="home-card future-card">
             <div class="card-icon mint-icon">⚑</div><div><span class="card-tag">長者防跌</span><h3>跌倒風險自我檢測</h3><p>適用 65 歲以上長者，或由家屬陪同代填。</p></div><button class="card-link" id="fallStartButton" type="button">開始檢測 <span>→</span></button>
+          </article>
+        </div>
+      </section>
+
+      <section class="tool-home care-home" aria-labelledby="acuteHeading">
+        <div class="section-heading"><div><p class="eyebrow">認識急症</p><h2 id="acuteHeading">及早認出警訊。</h2></div></div>
+        <div class="tool-grid care-grid">
+          <article class="home-card future-card">
+            <div class="card-icon coral-icon">！</div><div><span class="card-tag">急症科普</span><h3>認識急症</h3><p>認識冠心症與腦中風的警訊，以及等救護車時可以做什麼。</p></div><button class="card-link" id="acuteStartButton" type="button">開始閱讀 <span>→</span></button>
           </article>
         </div>
       </section>
@@ -282,6 +292,89 @@
         <p class="ems-source">內容參考：<a href="https://www.cdc.gov/steadi/pdf/STEADI-Brochure-StayIndependent-508.pdf" target="_blank" rel="noopener noreferrer">美國 CDC・STEADI Stay Independent 小冊子（Check Your Risk for Falling）</a>，題目依 CDC 原文自行翻譯；量表出自 Rubenstein 等人（J Safety Res, 2011;42(6):493-499）。快速版與「曾跌倒即視為風險較高」依 STEADI 三個關鍵問題。<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4625&amp;pid=19774" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・「防跌三步」守護長者安全</a>、<a href="https://www.hpa.gov.tw/Pages/List.aspx?nodeid=4624" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・長者防跌專區</a>。</p>
       </section>
 
+      <section class="ems-area acute-area" id="acuteArea" hidden aria-labelledby="acuteTitle" data-no-translate>
+        <div id="acuteHub">
+          <header class="ems-header acute-header">
+            <p class="eyebrow">認識急症</p>
+            <h2 id="acuteTitle">認識急症</h2>
+            <p>了解常見急症的警訊，以及等救護車時可以做什麼。本頁提供一般衛教資訊，不能用來自行診斷或排除疾病。</p>
+          </header>
+          <aside class="ems-alert"><div><strong>覺得不對勁，就不要等</strong><br />出現胸痛、呼吸困難、中風徵兆或意識改變時，請直接撥打 119，不需要先讀完本頁。</div><a href="tel:119">撥打 119</a></aside>
+          <h3 class="ems-menu-heading">選擇想了解的主題</h3>
+          <div class="ems-menu-grid">
+            <button class="ems-menu-card" id="cadButton" type="button" aria-controls="cadPage"><span class="ems-menu-icon">♥</span><h3>認識冠心症</h3><p>心臟血管堵住時會有哪些警訊，以及心肌梗塞發作時怎麼做。</p></button>
+            <button class="ems-menu-card" id="strokeInfoButton" type="button" aria-controls="strokeInfoPage"><span class="ems-menu-icon">↗</span><h3>認識腦中風</h3><p>用「微笑、舉手、說你好」辨識中風，並了解為什麼要記下時間。</p></button>
+          </div>
+        </div>
+
+        <article class="ems-detail acute-page" id="cadPage" hidden aria-labelledby="cadTitle">
+          <button class="ems-back-button" type="button" data-acute-back>← 返回認識急症</button>
+          <h3 id="cadTitle">認識冠心症</h3>
+          <aside class="ems-alert"><div><strong>出現這些症狀，請立即撥打 119</strong><br />胸悶、胸痛、心悸、呼吸困難、噁心、冒冷汗、頭暈或暈厥。請記下發作時間，不要自行開車就醫。</div><a href="tel:119">撥打 119</a></aside>
+          <h4>冠心症是什麼？</h4>
+          <p>供應心臟血液的血管叫做冠狀動脈。冠狀動脈變窄或被血塊堵住時，心肌會缺氧，這就是冠心症。輕微時可能只在活動時胸悶，嚴重時會發生急性心肌梗塞，甚至猝死。心臟疾病是國人十大死因的第 2 名。</p>
+          <h4>認識警訊</h4>
+          <div class="ems-info-grid">
+            <section class="ems-info-card"><h4>典型症狀</h4><p>胸口悶痛，像被重物壓住，可能延伸到左手臂或下巴，常伴隨冒冷汗，多在活動時出現。</p></section>
+            <section class="ems-info-card"><h4>不典型症狀</h4><p>約三成心肌梗塞的人沒有典型胸痛，可能只有上腹悶痛，或覺得疲倦無力。糖尿病患者與長者特別要留意。</p></section>
+            <section class="ems-info-card"><h4>更年期女性</h4><p>可能出現氣喘、背痛等不典型症狀。不要因為不是胸痛就忽略。</p></section>
+          </div>
+          <h4>等救護車時可以做什麼</h4>
+          <ul class="ems-list">
+            <li>停止活動，坐下或半躺休息。</li>
+            <li>不要自行開車就醫，由救護車送醫。</li>
+            <li>準備健保卡、平時用藥與病史資料，交給救護人員。</li>
+            <li>用藥：依 119 或醫師指示用藥，已有醫師處方的人依照醫囑使用。</li>
+            <li>病人失去意識、沒有正常呼吸時：依 119 線上指導做 CPR 和使用 AED。</li>
+          </ul>
+          <div class="ems-note"><strong>常見迷思：</strong>網路流傳胸痛時「不停用力咳嗽」可以自救，這是錯誤的。出現症狀應立即撥打 119，由救護人員送醫。</div>
+          <h4>到了急診會做什麼</h4>
+          <p>醫護人員會盡快做心電圖並抽血檢查。心肌梗塞初期，心電圖和抽血不一定看得出變化，所以第一次結果正常，也可能需要隔一段時間再檢查一次。這是為了避免漏掉病情，請耐心配合。</p>
+          <h4>危險因子與預防</h4>
+          <p>常見危險因子包括高血壓、糖尿病、高血脂、抽菸、年紀較大與家族史。慢性腎臟病、紅斑性狼瘡，以及長期使用類固醇的人也要特別注意。控制三高、戒菸並定期健康檢查，可以降低風險。</p>
+          <div class="acute-actions"><button class="primary-button" id="cadBmiLink" type="button">計算 BMI <span>→</span></button><button class="primary-button" id="cadGlucoseLink" type="button">查看飯前血糖參考值 <span>→</span></button></div>
+          <div class="ems-note">本頁提供一般衛教資訊，不能用來自行判斷或排除心臟疾病。有疑慮時請就醫，緊急時請撥打 119。</div>
+          <p class="ems-source">內容參考：<a href="https://www.sem.org.tw/EJournal/Detail/80" target="_blank" rel="noopener noreferrer">台灣急診醫學通訊・急性冠心症（奇美醫院急診部，2018）</a>、<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=5020&amp;pid=19748" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・連日低溫 做好保暖降低心血管急症風險（2026）</a>、<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=4576&amp;pid=15034" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・冷颼颼 溫差大「心」警訊 FAST送醫（2022）</a>、<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=127&amp;pid=11946" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・心血管疾病發作時，應大聲咳嗽才能救命？</a>、<a href="https://www.mohw.gov.tw/cp-16-86970-1.html" target="_blank" rel="noopener noreferrer">衛生福利部・114 年死因統計</a>。</p>
+        </article>
+
+        <article class="ems-detail acute-page" id="strokeInfoPage" hidden aria-labelledby="strokeInfoTitle">
+          <button class="ems-back-button" type="button" data-acute-back>← 返回認識急症</button>
+          <h3 id="strokeInfoTitle">認識腦中風</h3>
+          <aside class="ems-alert"><div><strong>突然出現任何一項，請立即撥打 119</strong><br />嘴角歪斜、單側手腳無力，或說話不清楚。請記下發作時間，由救護車送醫。</div><a href="tel:119">撥打 119</a></aside>
+          <h4>腦中風是什麼？</h4>
+          <p>腦中風是腦部血管突然出問題，使腦細胞缺氧受損。主要分成兩大類：</p>
+          <div class="ems-info-grid acute-two">
+            <section class="ems-info-card"><h4>阻塞型</h4><p>腦血管被血塊或硬化的血管壁堵住，血液送不到腦部。</p></section>
+            <section class="ems-info-card"><h4>出血型</h4><p>腦血管破裂出血，血塊壓迫腦組織。</p></section>
+          </div>
+          <p>腦中風不只發生在長者，年輕人也可能因為腦血管瘤或先天的腦血管異常而中風。腦血管疾病是國人十大死因的第 4 名，台灣平均每 42 分鐘就有 1 人因此死亡。</p>
+          <h4>辨識口訣：微笑、舉手、說你好</h4>
+          <div class="ems-info-grid">
+            <section class="ems-info-card"><h4>微笑</h4><p>嘴角歪斜、臉部左右不對稱。</p></section>
+            <section class="ems-info-card"><h4>舉手</h4><p>雙手平舉，其中一側無力往下垂。</p></section>
+            <section class="ems-info-card"><h4>說你好</h4><p>說話口齒不清、表達困難。</p></section>
+          </div>
+          <p>突然劇烈頭痛、突然眩暈或走路不穩，也可能是中風的警訊。中風快速檢查工具也可以請對方說「一」，觀察嘴型和聲音。</p>
+          <div class="acute-actions"><button class="primary-button" id="strokeCheckLink" type="button">開始中風快速檢查 <span>→</span></button></div>
+          <h4>為什麼要記下時間？</h4>
+          <p>阻塞型中風及早送醫，有機會接受打通血管的治療，例如血栓溶解劑或取栓手術。醫師需要知道症狀從什麼時候開始，才能判斷適合哪些治療。<strong>越早到院，能選擇的治療越多。</strong>如果不清楚確切時間，請記下最後一次看到他正常的時間。</p>
+          <h4>等救護車時可以做什麼</h4>
+          <ul class="ems-list">
+            <li>不要餵食、餵水或餵藥。</li>
+            <li>讓病人側躺，麻痺的那一側朝上，避免嘔吐時嗆到。</li>
+            <li>用藥：依 119 或醫師指示用藥，已有醫師處方的人依照醫囑使用。不要自行給阿斯匹靈或舌下片。</li>
+            <li>病人失去意識、沒有正常呼吸時：依 119 線上指導做 CPR 和使用 AED。</li>
+          </ul>
+          <div class="ems-note"><strong>不要放血：</strong>用針刺手指或耳垂放血沒有治療效果，疼痛反而可能讓血壓升高。</div>
+          <h4>到了急診會做什麼</h4>
+          <p>醫師通常會先安排腦部電腦斷層，最快分辨是阻塞還是出血。兩種中風的治療方向不同，所以要先確認是哪一種。</p>
+          <h4>危險因子與預防</h4>
+          <p>國健署列出 8 大危險因子：高血壓、糖尿病、膽固醇過高、心房顫動、運動量不足、體重過重、吸菸，以及腦中風家族史。符合其中任 3 項，就屬於腦中風高危險群。定期健康檢查、控制三高並維持健康的生活習慣，可以降低風險。</p>
+          <div class="ems-note">本頁提供一般衛教資訊，不能用來自行判斷或排除中風。有疑慮時請就醫，緊急時請撥打 119。</div>
+          <p class="ems-source">內容參考：<a href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=5020&amp;pid=20433" target="_blank" rel="noopener noreferrer">衛生福利部國民健康署・預防中風關鍵5招 辨識徵兆分秒必爭（2026）</a>、<a href="https://wwwv.tsgh.ndmutsgh.edu.tw/unit/10038/14307" target="_blank" rel="noopener noreferrer">三軍總醫院神經外科部・腦中風</a>、<a href="https://www.mohw.gov.tw/cp-16-86970-1.html" target="_blank" rel="noopener noreferrer">衛生福利部・114 年死因統計</a>。</p>
+        </article>
+      </section>
+
       <section class="ems-area" id="emsArea" hidden aria-labelledby="emsTitle" data-no-translate>
         <div id="emsHub">
           <header class="ems-header">
@@ -378,7 +471,8 @@
         <h2 id="versionTitle">版本記錄</h2>
         <p>醫二三的功能更新與上架紀錄。</p>
         <div class="version-list">
-          <section class="version-day"><h3>2026-11-04</h3><ul><li>修正：簡體中文及英文選項暫時關閉，標示為準備中</li><li>新增：預防保健（BMI 計算）</li><li>新增：飯前血糖及糖化血色素參考值</li><li>新增：跌倒風險自我檢測</li></ul></section>
+          <section class="version-day"><h3>2026-11-06</h3><ul><li>新增：跌倒風險自我檢測</li><li>新增：認識急症（冠心症、腦中風）</li></ul></section>
+          <section class="version-day"><h3>2026-11-04</h3><ul><li>修正：簡體中文及英文選項暫時關閉，標示為準備中</li><li>新增：預防保健（BMI 計算）</li><li>新增：飯前血糖及糖化血色素參考值</li></ul></section>
           <section class="version-day"><h3>2026-11-03</h3><ul><li>新增：認識緊急醫療救護服務系統（EMS）</li><li>新增：使用須知與隱私說明</li><li>修正：免責聲明與著作權聲明</li></ul></section>
           <section class="version-day"><h3>2026-11-01</h3><ul><li>新增：簡體中文版本</li><li>新增：英語版本</li></ul></section>
           <section class="version-day"><h3>2026-10-30</h3><ul><li>新增：贊助連結</li><li>新增：版本記錄頁面</li><li>修正：版本記錄頁捲動</li><li>修正：整合各年齡層生命徵象參考值</li><li>新增：儲存結果圖片按鈕</li></ul></section>
@@ -413,7 +507,7 @@
         <p>引用的參考資料著作權歸原權利人所有。授權申請請透過「關於作者」頁的回報問題表單聯繫。</p>
       </div>
     </footer>
-    <script src="i18n.js?v=13"></script>
-    <script src="app.js?v=13"></script>
+    <script src="i18n.js?v=14"></script>
+    <script src="app.js?v=14"></script>
   </body>
 </html>

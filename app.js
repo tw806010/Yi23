@@ -41,6 +41,10 @@ const preventionHub = document.querySelector('#preventionHub');
 const preventionPages = ['#bmiPage', '#glucosePage', '#hba1cPage'].map(selector => document.querySelector(selector));
 const preventionStartButton = document.querySelector('#preventionStartButton');
 let previousPreventionButton = null;
+const acuteArea = document.querySelector('#acuteArea');
+const acuteHub = document.querySelector('#acuteHub');
+const acutePages = ['#cadPage', '#strokeInfoPage'].map(selector => document.querySelector(selector));
+let previousAcuteButton = null;
 const vitalsArea = document.querySelector('#vitalsArea');
 const vitalsStartButton = document.querySelector('#vitalsStartButton');
 const vitalsForm = document.querySelector('#vitalsForm');
@@ -182,7 +186,7 @@ function showResult(isEmergency){
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startCheck(){ i18n.setTool('stroke'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = false; restartButton.hidden = false; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); document.querySelector('#fallArea').hidden = true; homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function returnHome(){ i18n.setTool('home'); current = 0; answers = []; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; emsArea.hidden = true; emsHub.hidden = false; emsPages.forEach(page => { page.hidden = true; }); preventionArea.hidden = true; preventionHub.hidden = false; preventionPages.forEach(page => { page.hidden = true; }); document.querySelector('#fallArea').hidden = true; closeAcute(); homePage.hidden = false; restartButton.hidden = true; homeButton.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function startTriage(){ i18n.setTool('triage'); homePage.hidden = true; vitalsArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; triageArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startVitals(){ i18n.setTool('vitals'); homePage.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; triageArea.hidden = true; vitalsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; vitalsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 function startEms(){ i18n.setTool('ems'); homePage.hidden = true; vitalsArea.hidden = true; triageArea.hidden = true; checkArea.hidden = true; resultArea.hidden = true; gcsArea.hidden = true; gcsResult.hidden = true; emsPages.forEach(page => { page.hidden = true; }); emsHub.hidden = false; emsArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; emsArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelector('#emsOverviewButton').focus(); }
@@ -203,6 +207,19 @@ document.querySelector('#bmiButton').addEventListener('click', event => showPrev
 document.querySelector('#glucoseButton').addEventListener('click', event => showPreventionPage(preventionPages[1], event.currentTarget));
 document.querySelector('#hba1cButton').addEventListener('click', event => showPreventionPage(preventionPages[2], event.currentTarget));
 document.querySelectorAll('[data-prevention-back]').forEach(button => button.addEventListener('click', showPreventionHub));
+function startAcute(){ i18n.setTool('acute'); homePage.hidden = true; acutePages.forEach(page => { page.hidden = true; }); acuteHub.hidden = false; acuteArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; acuteArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelector('#cadButton').focus(); }
+function showAcutePage(page, opener){ previousAcuteButton = opener; acuteHub.hidden = true; acutePages.forEach(item => { item.hidden = item !== page; }); page.scrollIntoView({ behavior: 'smooth', block: 'start' }); page.querySelector('[data-acute-back]').focus(); }
+function showAcuteHub(){ acutePages.forEach(page => { page.hidden = true; }); acuteHub.hidden = false; acuteArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); previousAcuteButton?.focus(); }
+function closeAcute(){ acuteArea.hidden = true; acuteHub.hidden = false; acutePages.forEach(page => { page.hidden = true; }); }
+// Links from the education pages jump straight into the related tool.
+function openPreventionFromAcute(index, opener){ closeAcute(); startPrevention(); showPreventionPage(preventionPages[index], document.querySelector(opener)); }
+document.querySelector('#acuteStartButton').addEventListener('click', startAcute);
+document.querySelector('#cadButton').addEventListener('click', event => showAcutePage(acutePages[0], event.currentTarget));
+document.querySelector('#strokeInfoButton').addEventListener('click', event => showAcutePage(acutePages[1], event.currentTarget));
+document.querySelectorAll('[data-acute-back]').forEach(button => button.addEventListener('click', showAcuteHub));
+document.querySelector('#cadBmiLink').addEventListener('click', () => openPreventionFromAcute(0, '#bmiButton'));
+document.querySelector('#cadGlucoseLink').addEventListener('click', () => openPreventionFromAcute(1, '#glucoseButton'));
+document.querySelector('#strokeCheckLink').addEventListener('click', () => { closeAcute(); startCheck(); });
 cardStartButton.addEventListener('click', startCheck);
 restartButton.addEventListener('click', reset);
 homeButton.addEventListener('click', returnHome);
