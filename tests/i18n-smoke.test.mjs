@@ -2,133 +2,20 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-const localePaths = {
-  'zh-TW': 'locales/zh-TW.json',
-  'zh-CN': 'locales/zh-CN.json',
-  en: 'locales/en.json'
-};
-const bundles = Object.fromEntries(Object.entries(localePaths).map(([locale, path]) => {
-  const bundle = JSON.parse(fs.readFileSync(path, 'utf8'));
-  assert.equal(bundle.locale, locale, `${path} locale tag`);
-  assert.ok(bundle.messages && typeof bundle.messages === 'object', `${path} messages`);
-  return [locale, bundle];
-}));
-
-const referenceKeys = Object.keys(bundles['zh-TW'].messages).sort();
-for (const locale of ['zh-CN', 'en']) {
-  assert.deepEqual(Object.keys(bundles[locale].messages).sort(), referenceKeys, `${locale} message coverage`);
-  assert.deepEqual(Object.keys(bundles[locale].legacyKeys).sort(), Object.keys(bundles['zh-TW'].legacyKeys).sort(), `${locale} legacy message IDs`);
-}
-const issueMessageId = bundles['zh-TW'].legacyKeys['回報問題'];
-assert.ok(issueMessageId);
-assert.equal(bundles['zh-CN'].messages[issueMessageId], '问题反馈');
-assert.equal(bundles.en.messages[issueMessageId], 'Report an issue');
-
-class MockMutationObserver {
-  constructor(callback) { this.callback = callback; }
-  observe() {}
-}
-async function loadI18n(source) {
-  const options = ['zh-TW', 'zh-CN', 'en'].map(value => ({ value, disabled: false }));
-  const languageSelect = {
-    value: '',
-    options,
-    addEventListener(_type, handler) { this.changeHandler = handler; }
-  };
-  const languageNotice = { hidden: true, textContent: '' };
-  const document = {
-    body: { querySelectorAll: () => [] },
-    documentElement: { lang: '' },
-    title: '',
-    querySelector(selector) {
-      if (selector === '#languageSelect') return languageSelect;
-      if (selector === '#languageNotice') return languageNotice;
-      return null;
-    },
-    createTreeWalker() { return { nextNode: () => false }; }
-  };
-  const storage = new Map([['yi23-locale', 'en']]);
-  const context = {
-    document,
-    localStorage: {
-      getItem: key => storage.get(key) ?? null,
-      setItem: (key, value) => storage.set(key, value)
-    },
-    fetch: async path => {
-      const normalizedPath = path.replace(/^\.\//, '');
-      const locale = Object.entries(localePaths).find(([, file]) => file === normalizedPath)?.[0];
-      if (!locale) return { ok: false, status: 404 };
-      return { ok: true, json: async () => bundles[locale] };
-    },
-    MutationObserver: MockMutationObserver,
-    NodeFilter: { SHOW_TEXT: 4 },
-    Node: { TEXT_NODE: 3, ELEMENT_NODE: 1 },
-    console,
-    Intl
-  };
-  context.window = {};
-  vm.runInNewContext(source, context, { filename: 'i18n.js' });
-  await context.window.Yi23I18n.ready;
-  return { i18n: context.window.Yi23I18n, languageSelect, languageNotice, storage };
-}
-
-// As shipped: only Traditional Chinese is open, so a saved English choice falls back quietly.
+// The site is Traditional Chinese only: i18n.js keeps the small API app.js uses and never loads locale files.
 const i18nSource = fs.readFileSync('i18n.js', 'utf8');
-const shipped = await loadI18n(i18nSource);
-assert.equal(shipped.i18n.locale, 'zh-TW');
-assert.equal(shipped.i18n.preferredLocale, 'zh-TW');
-assert.equal(shipped.languageNotice.hidden, true, 'closed locales do not show the per-tool fallback notice');
-assert.equal(shipped.storage.get('yi23-locale'), 'en', 'the saved choice is kept for when the locale reopens');
-assert.deepEqual(JSON.parse(JSON.stringify(shipped.i18n.getAvailableLocales('home'))), ['zh-TW']);
-for (const value of ['zh-CN', 'en']) assert.equal(shipped.languageSelect.options.find(option => option.value === value).disabled, true, `${value} option is greyed out`);
-assert.equal(shipped.i18n.setLocale('en'), false);
-assert.equal(shipped.i18n.locale, 'zh-TW');
-
-// Reopened: the per-tool locale gate must still work once zh-CN and en are enabled again.
-const reopenedSource = i18nSource.replace(/const ENABLED_LOCALES = Object\.freeze\(\[[^\]]*\]\);/, "const ENABLED_LOCALES = Object.freeze(['zh-TW', 'zh-CN', 'en']);");
-assert.notEqual(reopenedSource, i18nSource, 'test can reopen all locales');
-const { i18n, languageSelect, languageNotice, storage } = await loadI18n(reopenedSource);
-
-assert.equal(i18n.locale, 'en');
-assert.equal(i18n.t('GCS 步驟 2／3'), 'GCS · Step 2 of 3');
-assert.equal(i18n.t('回報問題'), 'Report an issue');
-assert.equal(i18n.t('認識緊急醫療救護服務系統（EMS）'), 'About the Emergency Medical Services (EMS) system');
-assert.equal(i18n.t('認識 EMS'), 'About EMS');
-assert.equal(i18n.t('Copyright © 2026 魏啟軒. All rights reserved.'), 'Copyright © 2026 魏啟軒. All rights reserved.');
-assert.equal(i18n.t('未經著作財產權人事先書面同意，不得重製、修改、散布或再授權本專案的程式碼、文字與插圖，亦不得用於商業用途。GitHub 服務條款允許的檢視及 fork，以及適用法律允許的合理使用，不在此限。'), "Without the copyright holder's prior written consent, the code, text and illustrations of this project may not be reproduced, modified, distributed or sublicensed, and may not be used commercially. Viewing and forking permitted by the GitHub Terms of Service, and fair use permitted by applicable law, are not restricted.");
-assert.equal(i18n.t('使用須知與隱私說明'), 'Terms of use & privacy');
-assert.equal(i18n.t('rights.pngGeneratedAt', { time: '2026/11/3' }), 'Generated: 2026/11/3');
-assert.equal(i18n.t('可能等候時間：10 分鐘'), 'Estimated wait: 10 minutes');
-assert.equal(i18n.t('GCS 12 分'), 'GCS score: 12');
-assert.equal(i18n.t('體溫：38 °C（耳溫；參考 35.9～37.6 °C）'), 'Temperature: 38 °C (Ear; reference 35.9–37.6 °C)');
-assert.equal(i18n.t('您在「F／臉部觀察」發現異常。中風治療分秒必爭，請立即尋求緊急醫療協助。'), 'Abnormal finding: F · Face. Stroke is time-critical. Call 119 immediately for emergency care.');
-assert.equal(i18n.formatDate(new Date('2026-11-03T12:00:00Z')).length > 0, true);
-
-i18n.setLocale('zh-CN');
-assert.equal(i18n.t('回報問題'), '问题反馈');
-assert.equal(i18n.t('認識 EMS'), '认识 EMS');
-assert.equal(i18n.t('未經著作財產權人事先書面同意，不得重製、修改、散布或再授權本專案的程式碼、文字與插圖，亦不得用於商業用途。GitHub 服務條款允許的檢視及 fork，以及適用法律允許的合理使用，不在此限。'), '未经著作财产权人事先书面同意，不得复制、修改、分发或再授权本项目的代码、文字与插图，亦不得用于商业用途。GitHub 服务条款允许的查看及 fork，以及适用法律允许的合理使用，不在此限。');
-assert.equal(i18n.t('生命徵象資料卡'), '生命体征数据卡');
-
-i18n.setLocale('en');
-i18n.setTool('ems');
+const i18nContext = { window: {}, Intl };
+vm.runInNewContext(i18nSource, i18nContext, { filename: 'i18n.js' });
+const i18n = i18nContext.window.Yi23I18n;
+await i18n.ready;
 assert.equal(i18n.locale, 'zh-TW');
-assert.deepEqual(JSON.parse(JSON.stringify(i18n.getAvailableLocales('ems'))), ['zh-TW']);
-assert.equal(i18n.preferredLocale, 'en');
-assert.equal(languageNotice.hidden, false);
-assert.equal(languageSelect.options.find(option => option.value === 'en').disabled, true);
-
-i18n.setTool('newAssessmentPreview');
-assert.equal(i18n.locale, 'zh-TW');
-assert.equal(JSON.stringify(i18n.getAvailableLocales('newAssessmentPreview')), '["zh-TW"]');
-assert.equal(languageNotice.hidden, false);
-assert.equal(languageNotice.textContent, 'This tool is currently available in Traditional Chinese only.');
-assert.equal(languageSelect.options.find(option => option.value === 'en').disabled, true);
-
-i18n.setTool('home');
-assert.equal(i18n.locale, 'en');
-assert.equal(languageNotice.hidden, true);
-assert.equal(storage.get('yi23-locale'), 'en');
+assert.equal(i18n.t('回報問題'), '回報問題');
+assert.equal(i18n.t('產生時間：{time}', { time: '2026/11/16' }), '產生時間：2026/11/16');
+assert.equal(i18n.setTool('ems'), 'zh-TW');
+assert.equal(i18n.currentTool, 'ems');
+assert.ok(i18n.formatDate(new Date('2026-11-03T12:00:00Z')).length > 0);
+assert.ok(!/localStorage|yi23-locale|fetch\(|locales\//.test(i18nSource), 'i18n.js no longer stores a language or loads locale files');
+assert.ok(!fs.existsSync('locales'), 'locale files are removed');
 
 const html = fs.readFileSync('index.html', 'utf8');
 const app = fs.readFileSync('app.js', 'utf8');
@@ -139,7 +26,6 @@ for (const asset of ['style.css', 'i18n.js', 'app.js']) {
   assert.ok(html.includes(`"${asset}?v=${cacheVersion}"`), `index.html loads ${asset} with the current cache version`);
   assert.ok(serviceWorker.includes(`'./${asset}?v=${cacheVersion}'`), `service worker precaches the versioned ${asset}`);
 }
-assert.match(html, /id="emsArea"[^>]*data-no-translate/, 'EMS content must stay in Traditional Chinese until reviewed translations are available');
 assert.ok(html.includes('Copyright © 2026 魏啟軒. All rights reserved.'), 'homepage footer includes the requested copyright notice');
 const emsCard = html.indexOf('id="emsStartButton"');
 assert.ok(html.indexOf('id="gcsStartButton"') < emsCard && emsCard < html.indexOf('更多健康工具即將推出'), 'EMS entry must sit between GCS and coming soon');
@@ -155,29 +41,23 @@ assert.match(app, /emsArea\.hidden = true/, 'global return-home flow hides the E
 const emsMarkup = html.match(/<section class="ems-area"[^>]*>[\s\S]*?(?=<section class="check-area" id="checkArea")/)?.[0] || '';
 assert.ok(emsMarkup.includes('https://law.moj.gov.tw/'), 'EMS sources link to national regulations');
 assert.ok(!/href="[^"]*(?:\.klfd\.|119\.tainan|county|city|救護資源)/i.test(emsMarkup), 'EMS content does not link to local resource directories');
-for (const path of ['i18n.js', 'locales/zh-TW.json', 'locales/zh-CN.json', 'locales/en.json']) {
-  assert.ok(serviceWorker.includes(`./${path}`), `service worker precache includes ${path}`);
+assert.ok(!serviceWorker.includes('locales/'), 'service worker no longer precaches locale files');
+for (const path of [...serviceWorker.matchAll(/'\.\/([^'?]+)(?:\?v=\d+)?'/g)].map(match => match[1]).filter(Boolean)) {
   assert.ok(fs.existsSync(path), `${path} exists for precache`);
 }
-assert.match(serviceWorker, /medical-123-v15/);
+assert.match(serviceWorker, /medical-123-v16/);
 const versionDates = [...html.matchAll(/<section class="version-day"><h3>(\d{4}-\d{2}-\d{2})<\/h3>/g)].map(match => match[1]);
 assert.ok(versionDates.length > 1, 'version history lists its dates');
 assert.deepEqual(versionDates, [...versionDates].sort().reverse(), 'version history lists the newest date first');
-for (const value of ['zh-CN', 'en']) assert.match(html, new RegExp(`<option value="${value}" disabled>[^<]*（準備中）</option>`), `${value} option is labelled 準備中`);
-assert.match(html, /id="termsPage"[^>]*data-no-translate/, 'terms page stays in Traditional Chinese until reviewed translations are available');
+assert.match(html, /<html lang="zh-Hant-TW">/, 'page language is zh-Hant-TW');
+assert.ok(!/languageSelect|languageNotice|language-select|language-notice|data-no-translate/.test(html), 'no language menu or translation markers remain');
+assert.ok(!/簡體中文|简体中文|English（|英語版本/.test(html), 'no language options or language notes in the version history');
+assert.ok(!/data-no-translate|i18n\.locale/.test(app), 'app.js has no language branches');
+assert.ok(!html.includes('語言偏好') && html.includes('本工具不會在您的瀏覽器保存您輸入的資料。'), 'privacy note no longer mentions a saved language preference');
 assert.ok(html.includes('不構成醫療建議或診斷'), 'terms page states it is not medical advice');
 assert.ok(html.includes('不會上傳或儲存到作者的伺服器'), 'terms page includes the privacy statement');
 assert.ok(!fs.readdirSync('.').some(file => file.toLowerCase().endsWith('.pdf')), 'third-party reference PDFs are not published from the site root');
 
-const visibleMarkup = html.replace(/<(style|script)\b[^>]*>[\s\S]*?<\/\1>/gi, '').replace(/<section class="ems-area[^"]*"[^>]*>[\s\S]*?(?=<section class="check-area" id="checkArea")/, '').replace(/<section class="bio-page" id="termsPage"[\s\S]*?(?=<footer>)/, '').replace(/<!--[\s\S]*?-->/g, '');
-const staticText = [...visibleMarkup.matchAll(/>([^<>]+)</g)].map(match => match[1].trim()).filter(Boolean);
-const translatableAttributes = [...visibleMarkup.matchAll(/(?:placeholder|aria-label|title|alt)="([^"]+)"/g)].map(match => match[1]);
-const untranslatedEnglish = [...staticText, ...translatableAttributes]
-  .map(value => value.replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>'))
-  .filter(value => value !== 'Copyright © 2026 魏啟軒. All rights reserved.')
-  .filter(value => !value.endsWith('（準備中）'))
-  .filter(value => /[\u3400-\u9fff]/.test(i18n.t(value, {}, 'en')));
-assert.deepEqual(untranslatedEnglish, [], `untranslated English UI strings: ${untranslatedEnglish.join(' | ')}`);
 
 class MockElement {
   constructor(id = '') { this.id = id; this.hidden = true; this.value = ''; this.style = {}; this.handlers = {}; this.focused = false; this.scrolls = 0; }
@@ -257,7 +137,6 @@ appElements.get('termsCloseButton').fire('click');
 assert.equal(appElements.get('termsPage').hidden, true);
 assert.equal(appElements.get('termsButton').focused, true);
 
-assert.match(html, /id="preventionArea"[^>]*data-no-translate/, 'prevention content stays in Traditional Chinese until reviewed translations are available');
 assert.ok(html.indexOf('id="careHeading"') > html.indexOf('id="toolHeading"') && html.indexOf('id="preventionStartButton"') > html.indexOf('id="careHeading"'), 'prevention entry sits in the everyday-health section below the emergency tools');
 assert.ok(html.includes('本工具適用 18 歲（含）以上成人'), 'BMI page states it is for adults only');
 appElements.get('preventionStartButton').fire('click');
@@ -334,7 +213,6 @@ assert.equal(selectedTool, 'home');
 assert.equal(appElements.get('preventionArea').hidden, true);
 assert.equal(appElements.get('homePage').hidden, false);
 
-assert.match(html, /id="fallArea"[^>]*data-no-translate/, 'fall risk content stays in Traditional Chinese until reviewed translations are available');
 assert.ok(html.indexOf('id="fallStartButton"') > html.indexOf('id="preventionStartButton"') && html.indexOf('id="fallStartButton"') < html.indexOf('class="emergency-note"'), 'fall risk entry sits next to prevention in the everyday-health section');
 assert.ok(html.includes('或服用抗凝血劑者撞到頭，請立即撥打 119。'), 'fall risk page shows the 119 reminder for people who already fell');
 assert.ok(html.includes('STEADI-Brochure-StayIndependent-508.pdf') && html.includes('依 CDC 原文自行翻譯'), 'fall risk page cites the CDC checklist and notes the translation');
@@ -403,7 +281,6 @@ assert.equal(selectedTool, 'home');
 assert.equal(fallEl('fallArea').hidden, true);
 assert.equal(fallEl('homePage').hidden, false);
 
-assert.match(html, /id="acuteArea"[^>]*data-no-translate/, 'acute-illness content stays in Traditional Chinese until reviewed translations are available');
 assert.ok(html.indexOf('id="acuteStartButton"') > html.indexOf('id="fallStartButton"') && html.indexOf('id="acuteStartButton"') < html.indexOf('class="emergency-note"'), 'acute-illness section sits below everyday health');
 const acuteMarkup = html.match(/<section class="ems-area acute-area"[\s\S]*?(?=<section class="ems-area" id="emsArea")/)?.[0] || '';
 for (const text of ['依 119 或醫師指示用藥，已有醫師處方的人依照醫囑使用', '依 119 線上指導做 CPR 和使用 AED']) assert.equal(acuteMarkup.split(text).length - 1, 2, `both acute pages say: ${text}`);
@@ -458,7 +335,7 @@ assert.equal(acuteEl('acuteHub').hidden, false);
 
 const menuMarkup = html.match(/<nav class="site-menu"[\s\S]*?<\/nav>/)?.[0] || '';
 assert.ok(html.indexOf('id="menuButton"') < html.indexOf('id="homeBrand"'), 'menu button sits at the top-left, before the brand');
-assert.deepEqual([...menuMarkup.matchAll(/<button class="site-menu-(?:group|item)[^"]*" id="[^"]+" type="button"[^>]*>([^<]+)</g)].map(match => match[1]), ['緊急工具', '中風快速檢查', '昏迷指數評估', '日常保健', 'BMI 計算', '對照飯前血糖', '對照糖化血色素', '跌倒風險自我檢測', '認識急症', '認識冠心症', '認識腦中風', '測量生命徵象', '急診檢傷分類', '認識 EMS'], 'menu lists the groups and items in the agreed order');
+assert.deepEqual([...menuMarkup.matchAll(/<button class="site-menu-(?:group|item)[^"]*" id="[^"]+" type="button"[^>]*>([^<]+)</g)].map(match => match[1]), ['緊急工具', '中風快速檢查', '昏迷指數評估', '日常保健', 'BMI 計算', '對照飯前血糖', '對照糖化血色素', '跌倒風險自我檢測', '認識急症', '冠心症', '腦中風', '測量生命徵象', '急診檢傷分類', '認識 EMS'], 'menu lists the groups and items in the agreed order');
 const menuEl = id => appElements.get(id);
 const menuGroupState = () => ['Emergency', 'Care', 'Acute'].map(name => [menuEl(`menuGroup${name}`).getAttribute('aria-expanded'), menuEl(`menuList${name}`).hidden]);
 const allCollapsed = [['false', true], ['false', true], ['false', true]];
@@ -517,4 +394,4 @@ assert.equal(menuEl('glucoseButton').focused, true);
 menuEl('homeButton').fire('click');
 assert.equal(menuEl('homePage').hidden, false);
 
-console.log('i18n, EMS, prevention, fall-risk, acute-illness and menu smoke tests passed: locale coverage, language gate, EMS, prevention, acute-illness and side-menu navigation, BMI, fasting glucose and HbA1c categories, fall checklist scoring, unique pages, and PWA asset paths.');
+console.log('zh-TW only, EMS, prevention, fall-risk, acute-illness and menu smoke tests passed: no language menu, EMS, prevention, acute-illness and side-menu navigation, BMI, fasting glucose and HbA1c categories, fall checklist scoring, unique pages, and PWA asset paths.');

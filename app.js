@@ -110,7 +110,7 @@ function saveResultPng(title, rows, fileName){
   });
   context.fillStyle = '#5f7180';
   context.font = '25px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
-  context.fillText(i18n.t('rights.pngGeneratedAt', { time: i18n.formatDate(new Date()) }), margin, height - 154);
+  context.fillText(`產生時間：${i18n.formatDate(new Date())}`, margin, height - 154);
   context.fillText(localizedText('本圖片由使用者在本機產生，非醫療診斷文件或正式病歷。'), margin, height - 112);
   context.fillText(localizedText('不能取代專業判斷；緊急狀況請立即撥打 119。'), margin, height - 70);
   return new Promise((resolve, reject) => canvas.toBlob(blob => {
@@ -181,7 +181,7 @@ function showResult(isEmergency){
     ['臉部、手臂、說話觀察', answers.map(answer => `${answer.label}：${answer.value === 'abnormal' ? '發現異常' : answer.value === 'unknown' ? '無法判斷' : '看起來正常'}`).join('；')],
     ['發病或最後正常時間', '尚未記錄，請補充告知救護人員'],
     ['結果提醒', isEmergency ? `發現異常：${abnormalities.join('、')}；請立即撥打 119。` : '本次未發現明顯異常，但不代表已排除中風；若症狀持續或惡化，請立即就醫。']
-  ], `${i18n.locale === 'en' ? 'stroke-check' : '中風快速檢查'}-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
+  ], `中風快速檢查-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
   resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function reset(){ current = 0; answers = []; resultArea.hidden = true; checkArea.hidden = false; restartButton.hidden = true; homeButton.hidden = false; renderStep(); checkArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
@@ -276,7 +276,7 @@ function showGcsResult(){
     ...gcsAnswers.map(answer => [answer.label, `${answer.key}${answer.score}`]),
     ['總分', hasNt ? '有項目無法評估，不計算總分' : `${total} 分`],
     ['結果提醒', concerning ? '請立即尋求救護或醫療協助。' : '本結果僅供紀錄，不能取代專業判斷。']
-  ], `${i18n.locale === 'en' ? 'GCS-assessment' : 'GCS評估'}-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
+  ], `GCS評估-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`);
   gcsResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function startGcs(){
@@ -354,7 +354,7 @@ vitalsForm.addEventListener('submit', event => {
   const bpValue = Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic}` : NaN;
   const now = i18n.formatDate(new Date());
   vitalsResults.hidden = false;
-  vitalsResults.innerHTML = `<h3>您的生命徵象資料卡</h3><p class="vitals-disclaimer">年齡參考區間依本頁列示資料整理，兒科資料表修訂於 2013 年；僅供對照，清醒／睡眠、活動、發燒與臨床狀況都會影響數值。</p><div class="vital-cards">${vitalCard('vital-temp', '體溫', temperature, '°C', temperatureStatus, `${reference.name}參考：${reference.low} 至 ${reference.high} °C`)}${vitalCard('vital-pulse', '脈搏', pulse, '次／分鐘', pulseStatus, ageReferences.pulse.detail)}${vitalCard('vital-resp', '呼吸', respiration, '次／分鐘', respirationStatus, ageReferences.respiration.detail)}${vitalCard('vital-bp', '血壓', bpValue, 'mmHg', pressureStatus, ageReferences.bloodPressure) }</div><section class="vitals-summary"><h4>就醫溝通摘要</h4><p>年齡：${ageDescription}<br />量測時間：${now}<br />體溫：${Number.isFinite(temperature) ? `${temperature} °C（${reference.name}）` : '未輸入'}；脈搏：${Number.isFinite(pulse) ? `${pulse} 次／分鐘` : '未輸入'}；呼吸：${Number.isFinite(respiration) ? `${respiration} 次／分鐘` : '未輸入'}；血壓：${Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg` : '未輸入'}。${note ? `<br />症狀備註：<span data-no-translate>${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>` : ''}</p><p class="vitals-time">這份資料用於協助說明，不取代醫療判斷。</p></section><section class="vitals-callout"><div class="emergency-icon">!</div><div><strong>出現危急症狀時，不要等待重測。</strong><p>若有無意識、呼吸困難、持續胸痛、大量出血或症狀突然惡化，請立即撥打 119。</p></div></section>`;
+  vitalsResults.innerHTML = `<h3>您的生命徵象資料卡</h3><p class="vitals-disclaimer">年齡參考區間依本頁列示資料整理，兒科資料表修訂於 2013 年；僅供對照，清醒／睡眠、活動、發燒與臨床狀況都會影響數值。</p><div class="vital-cards">${vitalCard('vital-temp', '體溫', temperature, '°C', temperatureStatus, `${reference.name}參考：${reference.low} 至 ${reference.high} °C`)}${vitalCard('vital-pulse', '脈搏', pulse, '次／分鐘', pulseStatus, ageReferences.pulse.detail)}${vitalCard('vital-resp', '呼吸', respiration, '次／分鐘', respirationStatus, ageReferences.respiration.detail)}${vitalCard('vital-bp', '血壓', bpValue, 'mmHg', pressureStatus, ageReferences.bloodPressure) }</div><section class="vitals-summary"><h4>就醫溝通摘要</h4><p>年齡：${ageDescription}<br />量測時間：${now}<br />體溫：${Number.isFinite(temperature) ? `${temperature} °C（${reference.name}）` : '未輸入'}；脈搏：${Number.isFinite(pulse) ? `${pulse} 次／分鐘` : '未輸入'}；呼吸：${Number.isFinite(respiration) ? `${respiration} 次／分鐘` : '未輸入'}；血壓：${Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg` : '未輸入'}。${note ? `<br />症狀備註：<span>${note.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>` : ''}</p><p class="vitals-time">這份資料用於協助說明，不取代醫療判斷。</p></section><section class="vitals-callout"><div class="emergency-icon">!</div><div><strong>出現危急症狀時，不要等待重測。</strong><p>若有無意識、呼吸困難、持續胸痛、大量出血或症狀突然惡化，請立即撥打 119。</p></div></section>`;
   addPngButton(vitalsResults, '生命徵象資料卡', [
     ['年齡', ageDescription],
     ['量測時間', now],
@@ -363,7 +363,7 @@ vitalsForm.addEventListener('submit', event => {
     ['呼吸', Number.isFinite(respiration) ? `${respiration} 次／分鐘；${ageReferences.respiration.detail}` : '未輸入'],
     ['血壓', Number.isFinite(systolic) && Number.isFinite(diastolic) ? `${systolic}／${diastolic} mmHg；${ageReferences.bloodPressure}` : `未輸入完整數值；${ageReferences.bloodPressure}`],
     ['症狀備註', note || '無']
-  ], `${i18n.locale === 'en' ? 'vital-signs' : '生命徵象'}-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`, [6]);
+  ], `生命徵象-${new Date().toISOString().slice(0, 16).replace('T', '-')}.png`, [6]);
   vitalsResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 const ageValueInput = document.querySelector('#ageValue');
